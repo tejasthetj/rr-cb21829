@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Robot Centric", group = "exercises")
-public class TeleOp extends LinearOpMode {
+public class TeleOpProgram extends LinearOpMode {
 
     DcMotor frontLeft;
     DcMotor frontRight;
@@ -33,11 +34,11 @@ public class TeleOp extends LinearOpMode {
     // port 3 expansion hub
     public Servo outLeftClaw;
 
-    public static final double LEFT_CLAW_CLOSE = 0.4;
-    public static final double LEFT_CLAW_OPEN = 0;
+    public static final double LEFT_CLAW_CLOSE = 0.075;
+    public static final double LEFT_CLAW_OPEN = 0.3;
 
-    public static final double RIGHT_CLAW_CLOSE = 0.6;
-    public static final double RIGHT_CLAW_OPEN = 0;
+    public static final double RIGHT_CLAW_CLOSE = 0.55;
+    public static final double RIGHT_CLAW_OPEN = 0.3;
 
     public static final double WRIST_UP = 1;
     public static final double WRIST_DOWN = 0.5;
