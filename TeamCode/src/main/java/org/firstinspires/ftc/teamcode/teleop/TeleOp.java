@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -14,6 +15,45 @@ public class TeleOp extends LinearOpMode {
     DcMotor frontRight;
     DcMotor rearLeft;
     DcMotor rearRight;
+
+    // port1 controlhub
+    public Servo leftClaw;
+    //port2 controlhub
+    public Servo rightClaw;
+    //port0 control
+    public Servo wrist;
+    // port 3 control hub
+    public Servo lebronJames;
+    //port 0 expansion hub
+    public Servo bethBurry;
+    //port 1 expansion hub
+    public Servo outWrist;
+    // port 2 expansion hub
+    public Servo outRightClaw;
+    // port 3 expansion hub
+    public Servo outLeftClaw;
+
+    public static final double LEFT_CLAW_CLOSE = 0.4;
+    public static final double LEFT_CLAW_OPEN = 0;
+
+    public static final double RIGHT_CLAW_CLOSE = 0.6;
+    public static final double RIGHT_CLAW_OPEN = 0;
+
+    public static final double WRIST_UP = 1;
+    public static final double WRIST_DOWN = 0.5;
+
+    public static final double PIVOT_UP = 1;
+    public static final double PIVOT_DOWN = 0;
+
+    public static final double OUT_LEFT_CLAW_OPEN = 0;
+    public static final double OUT_LEFT_CLAW_CLOSE = 1;
+
+    public static final double OUT_RIGHT_CLAW_OPEN = 0;
+    public static final double OUT_RIGHT_CLAW_CLOSE = 1;
+
+    public static final double OUT_PIVOT_UP = 0;
+    public static final double OUT_PIVOT_DOWN = 1;
+
 
     Boolean fCentric = Boolean.FALSE;
 
@@ -28,6 +68,15 @@ public class TeleOp extends LinearOpMode {
         rearLeft = hardwareMap.get(DcMotor.class, "left rear");
         rearRight = hardwareMap.get(DcMotor.class, "right rear");
 
+        leftClaw = hardwareMap.get(Servo.class, "left claw servo");
+        rightClaw = hardwareMap.get(Servo.class, "right claw servo");
+        wrist = hardwareMap.get(Servo.class, "wrist servo");
+        lebronJames = hardwareMap.get(Servo.class, "pivot servo");
+
+        bethBurry = hardwareMap.get(Servo.class, "outtake servo");
+        outLeftClaw = hardwareMap.get(Servo.class, "out left claw servo");
+        outRightClaw = hardwareMap.get(Servo.class, "out right claw servo");
+        outWrist = hardwareMap.get(Servo.class, "out wrist servo");
 
         // Change to match drivetrain
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
