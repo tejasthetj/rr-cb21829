@@ -10,10 +10,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class Master extends LinearOpMode {
 
-    DcMotor frontLeft;
-    DcMotor frontRight;
-    DcMotor rearLeft;
-    DcMotor rearRight;
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
+    public DcMotor rearLeft;
+    public DcMotor rearRight;
 
     IMU imu;
 
@@ -24,9 +24,9 @@ public class Master extends LinearOpMode {
     //port0 control hub
     public Servo wrist;
     // port 3 control hub
-    public Servo lebronJames;
+    public Servo axle;
     //port 0 expansion hub
-    public Servo bethBurry;
+    public Servo outAxle;
     //port 1 expansion hub
     public Servo outWrist;
     // port 2 expansion hub
@@ -35,26 +35,29 @@ public class Master extends LinearOpMode {
     public Servo outLeftClaw;
 
     public static class ServoParams {
-        public static final double LEFT_CLAW_CLOSE = 0.4;
-        public static final double LEFT_CLAW_OPEN = 0;
+        public static final double LEFT_CLAW_CLOSE = 0.075;
+        public static final double LEFT_CLAW_OPEN = 0.3;
 
-        public static final double RIGHT_CLAW_CLOSE = 0.6;
-        public static final double RIGHT_CLAW_OPEN = 0;
+        public static final double RIGHT_CLAW_CLOSE = 0.55;
+        public static final double RIGHT_CLAW_OPEN = 0.3;
 
-        public static final double WRIST_UP = 1;
-        public static final double WRIST_DOWN = 0.5;
+        public static final double WRIST_UP = .2;
+        public static final double WRIST_DOWN = 1;
 
         public static final double PIVOT_UP = 1;
-        public static final double PIVOT_DOWN = 0;
+        public static final double PIVOT_DOWN = 0.075;
 
-        public static final double OUT_LEFT_CLAW_OPEN = 0;
-        public static final double OUT_LEFT_CLAW_CLOSE = 1;
+        public static final double OUT_LEFT_CLAW_OPEN = 1;
+        public static final double OUT_LEFT_CLAW_CLOSE = .4;
 
-        public static final double OUT_RIGHT_CLAW_OPEN = 0;
+        public static final double OUT_RIGHT_CLAW_OPEN = .7;
         public static final double OUT_RIGHT_CLAW_CLOSE = 1;
 
         public static final double OUT_PIVOT_UP = 0;
         public static final double OUT_PIVOT_DOWN = 1;
+
+        public static final double OUT_WRIST_UP = .85;
+        public static final double OUT_WRIST_DOWN = .65;
     }
 
     @Override
@@ -63,6 +66,7 @@ public class Master extends LinearOpMode {
     }
 
     public void motorInit() {
+
         frontLeft = hardwareMap.get(DcMotor.class, "left front");
         frontRight = hardwareMap.get(DcMotor.class, "right front");
         rearLeft = hardwareMap.get(DcMotor.class, "left rear");
@@ -71,9 +75,9 @@ public class Master extends LinearOpMode {
         leftClaw = hardwareMap.get(Servo.class, "left claw servo");
         rightClaw = hardwareMap.get(Servo.class, "right claw servo");
         wrist = hardwareMap.get(Servo.class, "wrist servo");
-        lebronJames = hardwareMap.get(Servo.class, "pivot servo");
+        axle = hardwareMap.get(Servo.class, "pivot servo");
 
-        bethBurry = hardwareMap.get(Servo.class, "outtake servo");
+        outAxle = hardwareMap.get(Servo.class, "outtake servo");
         outLeftClaw = hardwareMap.get(Servo.class, "out left claw servo");
         outRightClaw = hardwareMap.get(Servo.class, "out right claw servo");
         outWrist = hardwareMap.get(Servo.class, "out wrist servo");
