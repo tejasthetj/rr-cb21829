@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop.actionsTesting;
 
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_UP;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_UP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -33,16 +37,20 @@ public class TeleopActionTesting extends OpMode {
     public void loop() {
         TelemetryPacket packet = new TelemetryPacket();
 
-        robot.wrist.setPosition(WRIST_DOWN);
-        robot.axle.setPosition(PIVOT_DOWN);
 
         if (gamepad1.a) {
             runningActions.add(new SequentialAction(
                     new SleepAction(1.0),
+                    new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
+                    new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN)),
+                    new SleepAction(0.5),
                     new ParallelAction(
-                            new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
-                            new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN))
-                    )
+                            new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_CLOSE)),
+                            new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_CLOSE))
+                    ),
+                    new SleepAction(1.0),
+                    new InstantAction(() -> robot.wrist.setPosition(WRIST_UP)),
+                    new InstantAction(() -> robot.axle.setPosition(PIVOT_UP))
             ));
         }
 
