@@ -11,10 +11,12 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_O
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_READJUST;
@@ -41,15 +43,20 @@ public class master_copy extends LinearOpMode {
 
     public static class ServoParams {
         public static final double LEFT_CLAW_CLOSE = 0.075;
+
+        public static final double LEFT_CLAW_READJUST = 0.085;
+
         public static final double LEFT_CLAW_OPEN = 0.3;
 
         public static final double RIGHT_CLAW_CLOSE = 0.55;
+
+        public static final double RIGHT_CLAW_READJUST = 0.51;
         public static final double RIGHT_CLAW_OPEN = 0.3;
 
         public static final double WRIST_UP = .2;
         public static final double WRIST_DOWN = 1;
 
-        public static final double PIVOT_UP = 0.075;
+        public static final double PIVOT_UP = 0;
         public static final double PIVOT_DOWN = 1;
 
         public static final double OUT_LEFT_CLAW_OPEN = 1;
@@ -59,10 +66,12 @@ public class master_copy extends LinearOpMode {
         public static final double OUT_RIGHT_CLAW_CLOSE = 1;
 
         public static final double OUT_PIVOT_UP = 0;
-        public static final double OUT_PIVOT_DOWN = 0.85;
+        public static final double OUT_PIVOT_DOWN = 1;
 
-        public static final double OUT_WRIST_UP = .85;
+        public static final double OUT_WRIST_UP = .81;
         public static final double OUT_WRIST_DOWN = .65;
+
+        public static final int elevatorup = 3000;
 
     }
 
@@ -108,11 +117,11 @@ public class master_copy extends LinearOpMode {
         Horizontalleft = hardwareMap.get(DcMotor.class, "horizontal 2");
 
         // Set motor directions based on the robot configuration
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
         rearLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
         rearRight.setDirection(DcMotor.Direction.FORWARD);
-        Horizontalright.setDirection(DcMotorSimple.Direction.REVERSE);
+        Horizontalleft.setDirection(DcMotorSimple.Direction.REVERSE);
         Elevatorright.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -164,7 +173,7 @@ public class master_copy extends LinearOpMode {
             frontRight.setPower(frontRightPower);
             rearRight.setPower(backRightPower);
             Elevatorright.setPower(verticalPower);
-            Elevatorleft.setPower(0.42*verticalPower);
+            Elevatorleft.setPower(verticalPower);
             Horizontalleft.setPower(horizontalPower);
             Horizontalright.setPower(horizontalPower);
 
@@ -173,10 +182,10 @@ public class master_copy extends LinearOpMode {
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
-            double vert = gamepad2.right_stick_y;
-            double hor = gamepad2.right_stick_x;
+            double vert = gamepad2.left_stick_y;
+            double hor = gamepad2.right_stick_y;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 2);
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double frontLeftPower = (y + x + rx) / denominator;
             double backLeftPower = (y - x + rx) / denominator;
             double frontRightPower = (y - x - rx) / denominator;
@@ -184,16 +193,24 @@ public class master_copy extends LinearOpMode {
             double verticalPower = vert;
             double horizontalPower = hor;
 
-            Elevatorright.setPower(verticalPower);
-            Elevatorleft.setPower(0.42*verticalPower);
-            Horizontalleft.setPower(horizontalPower);
-            Horizontalright.setPower(horizontalPower);
+
 
             frontLeft.setPower(frontLeftPower);
             rearLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             rearRight.setPower(backRightPower);
-
+            if (gamepad2.left_bumper && verticalPower<0){
+                Elevatorright.setPower(verticalPower*0.4);
+                Elevatorleft.setPower(verticalPower*0.4);
+            } else if (gamepad2.left_bumper && horizontalPower<0 ) {
+                Horizontalleft.setPower(horizontalPower*0.25);
+                Horizontalright.setPower(horizontalPower*0.25);
+            } else {
+                Elevatorright.setPower(verticalPower);
+                Elevatorleft.setPower(verticalPower);
+                Horizontalleft.setPower(horizontalPower);
+                Horizontalright.setPower(horizontalPower);
+            }
 
         }
 
@@ -217,10 +234,10 @@ public class master_copy extends LinearOpMode {
         } else if (gamepad1.left_bumper) {
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
-        } else if (gamepad2.a) {
+        } else if (gamepad2.left_bumper) {
             outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE);
             outLeftClaw.setPosition(OUT_LEFT_CLAW_CLOSE);
-        } else if (gamepad2.b) {
+        } else if (gamepad2.right_bumper) {
             outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
         } else if (gamepad1.b) {
@@ -229,13 +246,14 @@ public class master_copy extends LinearOpMode {
         } else if (gamepad1.a) {
             outWrist.setPosition(OUT_WRIST_DOWN);
             outAxle.setPosition(OUT_PIVOT_DOWN);
-        } else if (gamepad2.right_bumper) {
+        } else if (gamepad2.a) {
 
-
-
+            wrist.setPosition(WRIST_DOWN);
+            axle.setPosition(PIVOT_DOWN);
+            sleep(500);
             rightClaw.setPosition(RIGHT_CLAW_CLOSE);
             leftClaw.setPosition(LEFT_CLAW_CLOSE);
-            sleep(500);
+            sleep(700);
             wrist.setPosition(WRIST_UP);
             axle.setPosition(PIVOT_UP);
             rightClaw.setPosition(RIGHT_CLAW_READJUST);
@@ -244,7 +262,8 @@ public class master_copy extends LinearOpMode {
 
 
 
-        } else if (gamepad2.left_bumper){
+
+        } else if (gamepad2.b){
 
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
@@ -253,11 +272,25 @@ public class master_copy extends LinearOpMode {
             outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE);
             sleep(200);
             outWrist.setPosition(OUT_WRIST_UP);
-            outAxle.setPosition(OUT_PIVOT_UP);
+            outAxle.setPosition(OUT_PIVOT_DOWN);
             sleep(200);
+            wrist.setPosition(WRIST_READJUST);
+            axle.setPosition(PIVOT_READJUST);
+
+
+        } else if(gamepad2.x){
+            outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
+            outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
+            sleep(200);
+            rightClaw.setPosition(RIGHT_CLAW_OPEN);
+            leftClaw.setPosition(LEFT_CLAW_OPEN);
+            sleep(100);
             wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
-            sleep(200);
+            sleep(500);
+            outWrist.setPosition(OUT_WRIST_DOWN);
+            outAxle.setPosition(OUT_PIVOT_UP);
+
 
         }
 

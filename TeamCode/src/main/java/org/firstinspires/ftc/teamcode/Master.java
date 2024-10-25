@@ -80,23 +80,28 @@ public class Master extends LinearOpMode {
         public static final double RIGHT_CLAW_READJUST = 0.51;
         public static final double RIGHT_CLAW_OPEN = 0.3;
 
-        public static final double WRIST_UP = .2;
+        public static final double WRIST_UP = 0;
         public static final double WRIST_DOWN = 1;
+
+        public static final double WRIST_READJUST = 1;
+        public static final double PIVOT_READJUST = 0.7;
+
+
 
         public static final double PIVOT_UP = 0;
         public static final double PIVOT_DOWN = 1;
 
         public static final double OUT_LEFT_CLAW_OPEN = 1;
-        public static final double OUT_LEFT_CLAW_CLOSE = .4;
+        public static final double OUT_LEFT_CLAW_CLOSE = 0.55;
 
         public static final double OUT_RIGHT_CLAW_OPEN = .7;
-        public static final double OUT_RIGHT_CLAW_CLOSE = 1;
+        public static final double OUT_RIGHT_CLAW_CLOSE = 0.85;
 
         public static final double OUT_PIVOT_UP = 0;
-        public static final double OUT_PIVOT_DOWN = 1;
+        public static final double OUT_PIVOT_DOWN = 0.96;
 
-        public static final double OUT_WRIST_UP = .81;
-        public static final double OUT_WRIST_DOWN = .65;
+        public static final double OUT_WRIST_UP = 0.81;
+        public static final double OUT_WRIST_DOWN = 0.81;
 
         public static final int elevatorup = 3000;
     }
