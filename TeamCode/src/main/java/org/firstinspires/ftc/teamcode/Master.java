@@ -77,8 +77,8 @@ public class Master extends LinearOpMode {
 
         public static final double RIGHT_CLAW_CLOSE = 0.55;
 
-        public static final double RIGHT_CLAW_READJUST = 0.51;
-        public static final double RIGHT_CLAW_OPEN = 0.3;
+        public static final double RIGHT_CLAW_READJUST = 0;
+        public static final double RIGHT_CLAW_OPEN = 0;
 
         public static final double WRIST_UP = 0;
         public static final double WRIST_DOWN = 1;
