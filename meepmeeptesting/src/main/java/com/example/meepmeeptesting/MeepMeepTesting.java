@@ -1,10 +1,12 @@
 package com.example.meepmeeptesting;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
 
-import org.rowlandhall.meepmeep.MeepMeep;
-import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
-import org.rowlandhall.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
+
+import com.noahbres.meepmeep.MeepMeep;
+import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
+import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
@@ -13,15 +15,33 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                        .forward(60)
-                        .turn(Math.toRadians(180))
-                        .forward(30)
-                        .turn(Math.toRadians(180))
-                        .build());
+                .build();
+
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -65, Math.toRadians(90)))
+//                .setReversed(false)
+//                .splineTo(new Vector2d(-48.0, -16), -Math.PI / 2)
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+//                .build());
+
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -65, Math.toRadians(90)))
+                .setReversed(false)
+                .splineTo(new Vector2d(-48.0, -34), Math.PI / 2)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .waitSeconds(3)
+                .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .waitSeconds(3)
+                .strafeToLinearHeading(new Vector2d(-60, -25), Math.toRadians(180))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .waitSeconds(3)
+                .build());
 
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTOTHEDEEP_JUICE_DARK)
+        meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
