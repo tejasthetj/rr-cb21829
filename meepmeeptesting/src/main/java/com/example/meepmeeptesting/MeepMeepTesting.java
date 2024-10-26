@@ -37,7 +37,6 @@ public class MeepMeepTesting {
                 .strafeToLinearHeading(new Vector2d(-60, -25), Math.toRadians(180))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .waitSeconds(3)
                 .build());
 
 
