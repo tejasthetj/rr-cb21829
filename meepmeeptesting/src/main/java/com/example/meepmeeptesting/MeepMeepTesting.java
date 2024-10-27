@@ -14,7 +14,7 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(80, 80, Math.toRadians(180), Math.toRadians(180), 15)
                 .build();
 
 //        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -65, Math.toRadians(90)))
@@ -24,17 +24,31 @@ public class MeepMeepTesting {
 //                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
 //                .build());
 
+//        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -65, Math.toRadians(90)))
+//                .setReversed(false)
+//                .splineTo(new Vector2d(-48.0, -34), Math.PI / 2)
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+//                .waitSeconds(3)
+//                .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+//                .waitSeconds(3)
+//                .strafeToLinearHeading(new Vector2d(-60, -25), Math.toRadians(180))
+//                .waitSeconds(1)
+//                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+//                .build());
+
         myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, -65, Math.toRadians(90)))
                 .setReversed(false)
-                .splineTo(new Vector2d(-48.0, -34), Math.PI / 2)
+                .splineTo(new Vector2d(-40, -26), Math.PI)
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .waitSeconds(3)
                 .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .waitSeconds(3)
-                .strafeToLinearHeading(new Vector2d(-60, -25), Math.toRadians(180))
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180))
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
                 .build());
