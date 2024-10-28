@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
-@Autonomous(name = "BLUE_TEST_AUTO_PIXEL", group = "Autonomous")
+@Autonomous(name = "red traj testing", group = "Autonomous")
 public class AutoTrajTesting extends LinearOpMode {
 
 
@@ -32,13 +32,17 @@ public class AutoTrajTesting extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         TrajectoryActionBuilder myTraj = drive.actionBuilder(initialPose)
-                .lineToY(37)
-                .setTangent(Math.toRadians(0))
-                .lineToX(18)
-                .waitSeconds(3)
-                .setTangent(Math.toRadians(0))
-                .lineToXSplineHeading(46, Math.toRadians(180))
-                .waitSeconds(3);
+                .setReversed(false)
+                .splineTo(new Vector2d(-40, -26), Math.PI)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180))
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
 
         waitForStart();
 
