@@ -61,6 +61,8 @@ public class AutoTrajTesting extends LinearOpMode {
 
         Pose2d initialPoseSample1 = new Pose2d(-30, -63, Math.toRadians(90));
         Pose2d initialPoseBasketOuttake = new Pose2d(-48, -37, Math.PI/2);
+        Pose2d initialPoseBasketOuttake1 = new Pose2d(-58, -37, Math.toRadians(90));
+        Pose2d initialPoseBasketOuttake2 = new Pose2d(-60, -25, Math.toRadians(180));
         Pose2d initialPoseSample2 = new Pose2d(-55, -55, Math.toRadians(225));
         Pose2d initialPoseSample3 = new Pose2d(-55, -55, Math.toRadians(225));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPoseSample1);
@@ -94,7 +96,14 @@ public class AutoTrajTesting extends LinearOpMode {
                 .setReversed(true)
                 .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180));
 
+        TrajectoryActionBuilder myTraj4 = drive.actionBuilder(initialPoseBasketOuttake1)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
 
+
+        TrajectoryActionBuilder myTraj5 = drive.actionBuilder(initialPoseBasketOuttake2)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
 
         waitForStart();
 
