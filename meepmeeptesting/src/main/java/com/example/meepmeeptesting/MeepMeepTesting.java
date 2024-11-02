@@ -43,17 +43,17 @@ public class MeepMeepTesting {
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-48, -37, Math.PI/2), Math.PI/2)
                 .waitSeconds(3)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45))
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(-58, -37, Math.toRadians(90)), Math.toRadians(540))
                 .waitSeconds(3)
                 .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .setReversed(true)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45))
+                .setReversed(false)
                 .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180))
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45))
                 .build());
 
 
