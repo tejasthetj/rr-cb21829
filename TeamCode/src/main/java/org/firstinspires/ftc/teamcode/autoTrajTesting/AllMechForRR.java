@@ -79,7 +79,7 @@ public class AllMechForRR {
             rightClaw.setPosition(RIGHT_CLAW_READJUST);
             leftClaw.setPosition(LEFT_CLAW_READJUST);
             try {
-                sleep(200);
+                sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -117,6 +117,11 @@ public class AllMechForRR {
             }
             outWrist.setPosition(OUT_WRIST_DOWN);
             outAxle.setPosition(OUT_PIVOT_UP);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             return false;
         }
