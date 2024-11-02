@@ -28,71 +28,45 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.SampleDetectionPipelinePNP;
+
+import org.opencv.core.Scalar;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
+import java.util.Objects;
 
 @TeleOp(name = "Teleop", group = "Exercises")
 public class master_copy extends LinearOpMode {
-
+    private OpenCvCamera camera;
+    private SampleDetectionPipelinePNP pipeline;
     public DcMotor frontLeft, frontRight, rearLeft, rearRight;
     public DcMotor Elevatorright, Elevatorleft, Horizontalright, Horizontalleft;
-
     IMU imu;
 
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
 
-
-    public static class ServoParams {
-        public static final double LEFT_CLAW_CLOSE = 0.075;
-
-        public static final double LEFT_CLAW_READJUST = 0.085;
-
-        public static final double LEFT_CLAW_OPEN = 0.3;
-
-        public static final double RIGHT_CLAW_CLOSE = 0.55;
-
-        public static final double RIGHT_CLAW_READJUST = 0.51;
-        public static final double RIGHT_CLAW_OPEN = 0.3;
-
-        public static final double WRIST_UP = .2;
-        public static final double WRIST_DOWN = 1;
-
-        public static final double PIVOT_UP = 0;
-        public static final double PIVOT_DOWN = 1;
-
-        public static final double OUT_LEFT_CLAW_OPEN = 1;
-        public static final double OUT_LEFT_CLAW_CLOSE = .4;
-
-        public static final double OUT_RIGHT_CLAW_OPEN = .7;
-        public static final double OUT_RIGHT_CLAW_CLOSE = 1;
-
-        public static final double OUT_PIVOT_UP = 0;
-        public static final double OUT_PIVOT_DOWN = 1;
-
-        public static final double OUT_WRIST_UP = .81;
-        public static final double OUT_WRIST_DOWN = .65;
-
-        public static final int elevatorup = 3000;
-
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
-        // Initialize the hardware
+        // Initialize the hardware and camera
         motorInit();
+
 
         // Wait for the start button to be pressed
         waitForStart();
 
         // Main loop, runs until stop is pressed
         while (opModeIsActive()) {
-            // Perform movement based on field-centric or robot-centric control
-            centricMovement(true);
-
-            // Handle servo movements
-            servoMovements();
-
-
+            centricMovement(true);  // Perform movement based on field-centric control
+            servoMovements();       // Handle servo movements
         }
+
+        // Close the camera after stopping the OpMode
+        closeCamera();
     }
 
     public void motorInit() {
@@ -124,8 +98,6 @@ public class master_copy extends LinearOpMode {
         Horizontalleft.setDirection(DcMotorSimple.Direction.REVERSE);
         Elevatorright.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-
         imu = hardwareMap.get(IMU.class, "imu");
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
@@ -136,17 +108,42 @@ public class master_copy extends LinearOpMode {
         imu.initialize(parameters);
     }
 
+    private void initializeCamera() {
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        camera = OpenCvCameraFactory.getInstance().createWebcam(
+                hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+
+        // Initialize the pipeline
+        pipeline = new SampleDetectionPipelinePNP();
+        camera.setPipeline(pipeline);
+
+        // Start streaming from the camera asynchronously
+        camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                camera.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                telemetry.addData("Camera Error", errorCode);
+            }
+        });
+    }
+
+    private void closeCamera() {
+        if (camera != null) {
+            camera.closeCameraDevice();
+        }
+    }
+
     public void centricMovement(Boolean fieldCentric) {
-        // Initialize motors before any movement
-
-        motorInit();
-
-        if (fieldCentric == Boolean.FALSE) {
+        if (!fieldCentric) {
             // Field-centric control
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
-
 
             if (gamepad1.start) {
                 imu.resetYaw();
@@ -177,7 +174,7 @@ public class master_copy extends LinearOpMode {
             Horizontalleft.setPower(horizontalPower);
             Horizontalright.setPower(horizontalPower);
 
-        } else if (fieldCentric == Boolean.TRUE) {
+        } else {
             // Robot-centric control
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x;
@@ -193,31 +190,19 @@ public class master_copy extends LinearOpMode {
             double verticalPower = vert;
             double horizontalPower = hor;
 
-
-
             frontLeft.setPower(frontLeftPower);
             rearLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             rearRight.setPower(backRightPower);
-            if (gamepad2.left_bumper && verticalPower<0){
-                Elevatorright.setPower(verticalPower*0.4);
-                Elevatorleft.setPower(verticalPower*0.4);
-            } else if (gamepad2.left_bumper && horizontalPower<0 ) {
-                Horizontalleft.setPower(horizontalPower*0.25);
-                Horizontalright.setPower(horizontalPower*0.25);
-            } else {
-                Elevatorright.setPower(verticalPower);
-                Elevatorleft.setPower(verticalPower);
-                Horizontalleft.setPower(horizontalPower);
-                Horizontalright.setPower(horizontalPower);
-            }
-
+            Elevatorright.setPower(verticalPower);
+            Elevatorleft.setPower(verticalPower);
+            Horizontalleft.setPower(horizontalPower);
+            Horizontalright.setPower(horizontalPower);
         }
-
     }
 
-    public void servoMovements()  {
 
+    public void servoMovements()  {
 
 
         if (gamepad1.dpad_up) {
@@ -229,8 +214,8 @@ public class master_copy extends LinearOpMode {
             wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
         } else if (gamepad1.right_bumper) {
-            rightClaw.setPosition(RIGHT_CLAW_CLOSE);
-            leftClaw.setPosition(LEFT_CLAW_CLOSE);
+            rightClaw.setPosition(RIGHT_CLAW_READJUST);
+            leftClaw.setPosition(LEFT_CLAW_READJUST);
         } else if (gamepad1.left_bumper) {
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
@@ -240,13 +225,8 @@ public class master_copy extends LinearOpMode {
         } else if (gamepad2.right_bumper) {
             outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
-        } else if (gamepad1.b) {
-            outWrist.setPosition(OUT_WRIST_UP);
-            outAxle.setPosition(OUT_PIVOT_UP);
-        } else if (gamepad1.a) {
-            outWrist.setPosition(OUT_WRIST_DOWN);
-            outAxle.setPosition(OUT_PIVOT_DOWN);
-        } else if (gamepad2.a) {
+        }
+        else if (gamepad1.a) {
 
             wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
@@ -263,7 +243,7 @@ public class master_copy extends LinearOpMode {
 
 
 
-        } else if (gamepad2.b){
+        } else if (gamepad1.b){
 
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
@@ -278,15 +258,15 @@ public class master_copy extends LinearOpMode {
             axle.setPosition(PIVOT_READJUST);
 
 
-        } else if(gamepad2.x){
+        } else if(gamepad1.x){
             outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
             sleep(200);
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
             sleep(100);
-            wrist.setPosition(WRIST_DOWN);
-            axle.setPosition(PIVOT_DOWN);
+            wrist.setPosition(WRIST_READJUST);
+            axle.setPosition(PIVOT_READJUST);
             sleep(500);
             outWrist.setPosition(OUT_WRIST_DOWN);
             outAxle.setPosition(OUT_PIVOT_UP);
@@ -297,8 +277,7 @@ public class master_copy extends LinearOpMode {
     }
 
 
-
-
     }
+
 
 
