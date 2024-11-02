@@ -59,21 +59,41 @@ public class AutoTrajTesting extends LinearOpMode {
         // Initialize the motors, servos, and IMU
         motorAndServoInit();
 
-        Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        Pose2d initialPoseSample1 = new Pose2d(-30, -63, Math.toRadians(90));
+        Pose2d initialPoseBasketOuttake = new Pose2d(-48, -37, Math.PI/2);
+        Pose2d initialPoseSample2 = new Pose2d(-55, -55, Math.toRadians(225));
+        Pose2d initialPoseSample3 = new Pose2d(-55, -55, Math.toRadians(225));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPoseSample1);
 
-        TrajectoryActionBuilder myTraj = drive.actionBuilder(initialPose)
+
+        TrajectoryActionBuilder myTraj = drive.actionBuilder(initialPoseSample1)
+                .waitSeconds(1)
                 .setReversed(false)
-                .splineTo(new Vector2d(-40, -26), Math.PI)
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .strafeToLinearHeading(new Vector2d(-58, -34), Math.PI / 2)
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225))
-                .setReversed(true)
-                .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(-48, -37, Math.PI/2), Math.PI/2);
+
+
+
+
+        TrajectoryActionBuilder myTraj1 = drive.actionBuilder(initialPoseBasketOuttake)
                 .waitSeconds(1)
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
+
+
+
+
+
+        TrajectoryActionBuilder myTraj2 = drive.actionBuilder(initialPoseSample2)
+                .waitSeconds(1)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-58, -37, Math.toRadians(90)), Math.toRadians(540));
+
+
+
+        TrajectoryActionBuilder myTraj3 = drive.actionBuilder(initialPoseSample3)
+                .waitSeconds(2)
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(-60, -25, Math.toRadians(180)), Math.toRadians(180));
+
 
 
         waitForStart();
