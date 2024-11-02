@@ -28,7 +28,7 @@ public class AutoTrajTesting extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        Pose2d initialPose = new Pose2d(11.8, 61.7, Math.toRadians(90));
+        Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         TrajectoryActionBuilder myTraj = drive.actionBuilder(initialPose)
