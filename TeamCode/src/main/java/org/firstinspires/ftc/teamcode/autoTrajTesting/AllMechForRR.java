@@ -26,25 +26,23 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class AllMechForRR {
-    public DcMotorEx Elevatorright, Elevatorleft, Horizontalright, Horizontalleft;
+    public DcMotorEx elevatorLeft, elevatorRight, Horizontalright, Horizontalleft;
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
 
 
 
     public AllMechForRR(HardwareMap hardwareMap) {
-        Elevatorright = hardwareMap.get(DcMotorEx.class, "vertical 1");
-        Elevatorleft = hardwareMap.get(DcMotorEx.class, "vertical 2");
         Horizontalright = hardwareMap.get(DcMotorEx.class, "horizontal 1");
         Horizontalleft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
 
         Horizontalleft.setDirection(DcMotorSimple.Direction.REVERSE);
-        Elevatorright.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftClaw = hardwareMap.get(Servo.class, "left claw servo");
         rightClaw = hardwareMap.get(Servo.class, "right claw servo");
@@ -55,6 +53,83 @@ public class AllMechForRR {
         outLeftClaw = hardwareMap.get(Servo.class, "out left claw servo");
         outRightClaw = hardwareMap.get(Servo.class, "out right claw servo");
         outWrist = hardwareMap.get(Servo.class, "out wrist servo");
+
+        elevatorLeft = hardwareMap.get(DcMotorEx.class, "vertical 2");
+        elevatorRight = hardwareMap.get(DcMotorEx.class, "vertical 1");
+        elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevatorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevatorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevatorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+    }
+
+    public class ElevatorUp implements Action {
+
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                elevatorLeft.setPower(0.4);
+                elevatorRight.setPower(0.4);
+                initialized = true;
+            }
+
+            double posLeft = elevatorLeft.getCurrentPosition();
+            double posRight = elevatorRight.getCurrentPosition();
+            packet.put("leftPos", posLeft);
+            packet.put("rightPos", posRight);
+
+            if (posLeft < 3100.0 && posRight < 3100.0) {
+                return true;
+            } else {
+                rightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
+                leftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
+                elevatorRight.setPower(0);
+                elevatorLeft.setPower(0);
+                return false;
+            }
+
+        }
+    }
+    public Action elevatorUp() {
+        return new ElevatorUp();
+    }
+
+    public class ElevatorDown implements Action {
+        private boolean initialized = false;
+
+
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+
+            if (!initialized) {
+                elevatorLeft.setPower(-0.4);
+                elevatorRight.setPower(-0.4);
+                initialized = true;
+            }
+
+            double posLeft = elevatorLeft.getCurrentPosition();
+            double posRight = elevatorRight.getCurrentPosition();
+            packet.put("leftPos", posLeft);
+            packet.put("rightPos", posRight);
+
+            if (posLeft > 10.0 && posRight > 10.0) {
+                return true;
+            } else {
+                elevatorLeft.setPower(0);
+                elevatorRight.setPower(0);
+                return false;
+            }
+
+        }
+    }
+    public Action elevatorDown() {
+        return new ElevatorDown();
     }
 
     public class IntakeClawAction implements Action {
