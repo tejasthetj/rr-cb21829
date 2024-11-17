@@ -21,6 +21,7 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_READJUST;
 
+import com.arcrobotics.ftclib.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,9 +29,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.SampleDetectionPipelinePNP;
 
 import org.opencv.core.Scalar;
@@ -50,19 +59,55 @@ public class master_copy extends LinearOpMode {
 
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
 
+    private MecanumDrive drive;
+
+    private Pose2d initialPose;// Variable for the initial pose
+
+    private Pose2d initial_pose = new Pose2d(-55, -55, Math.toRadians(225));
+    private boolean initialPoseSet = false;  // Flag to track if the initial pose is set
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Initialize the hardware and camera
         motorInit();
 
+        // Initialize MecanumDrive here, assuming you have it set up
+        drive = new MecanumDrive(hardwareMap,initial_pose);
 
         // Wait for the start button to be pressed
         waitForStart();
+        TrajectoryActionBuilder myTraj4 = drive.actionBuilder(initialPose)
+                .waitSeconds(1)
+                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
 
         // Main loop, runs until stop is pressed
         while (opModeIsActive()) {
+            // Check if the button is pressed to set the initial pose
+            if (gamepad1.a && !initialPoseSet) {  // 'A' button pressed
+                initialPose = drive.getPoseEstimate();  // Capture current pose
+                initialPoseSet = true;  // Mark that the initial pose is set
+                telemetry.addData("Initial Pose", initialPose.toString());
+            }
+
+            // Continuously track the current pose
+            Pose2d currentPose = drive.getPoseEstimate();
+            telemetry.addData("Current Pose", currentPose.toString());
+
+            // Perform movement and servo handling
             centricMovement(true);  // Perform movement based on field-centric control
             servoMovements();       // Handle servo movements
+
+            // If the initial pose is set, you can perform trajectory planning from it
+            if (initialPoseSet) {
+                Actions.runBlocking(
+                        new SequentialAction(
+                                myTraj4.build()
+                        )
+                );
+                initialPoseSet = false;
+        }
+
+            telemetry.update();  // Update telemetry
         }
 
         // Close the camera after stopping the OpMode
@@ -226,7 +271,7 @@ public class master_copy extends LinearOpMode {
             outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
         }
-        else if (gamepad1.a) {
+        else if (gamepad2.a) {
 
             wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
@@ -243,7 +288,7 @@ public class master_copy extends LinearOpMode {
 
 
 
-        } else if (gamepad1.b){
+        } else if (gamepad2.b){
 
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
@@ -258,7 +303,7 @@ public class master_copy extends LinearOpMode {
             axle.setPosition(PIVOT_READJUST);
 
 
-        } else if(gamepad1.x){
+        } else if(gamepad2.x){
             outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
             sleep(200);
@@ -277,7 +322,7 @@ public class master_copy extends LinearOpMode {
     }
 
 
-    }
+}
 
 
 

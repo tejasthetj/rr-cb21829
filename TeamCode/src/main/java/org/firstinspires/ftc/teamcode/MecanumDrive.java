@@ -61,6 +61,17 @@ import java.util.List;
 
 @Config
 public final class MecanumDrive {
+
+
+    public Pose2d getPoseEstimate() {
+        double x = pose.position.x ;  // X coordinate from odometry
+        double y = (pose.position.y);  // Y coordinate from odometry
+        double heading = Math.toDegrees(pose.heading.toDouble());  // Heading from IMU
+
+        // Create and return a Pose2d object with the current x, y, and heading values
+        return new Pose2d(x, y, Math.toRadians(heading));
+    }
+
     public static class Params {
         // IMU orientation
         // TODO: fill in these values based on
