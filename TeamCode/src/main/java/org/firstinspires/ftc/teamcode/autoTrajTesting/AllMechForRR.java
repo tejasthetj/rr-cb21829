@@ -67,14 +67,16 @@ public class AllMechForRR {
     }
 
     public class ElevatorUp implements Action {
-
         private boolean initialized = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+            System.out.println("Action Running");
             if (!initialized) {
                 elevatorLeft.setPower(0.4);
                 elevatorRight.setPower(0.4);
+                elevatorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                elevatorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 initialized = true;
             }
 
