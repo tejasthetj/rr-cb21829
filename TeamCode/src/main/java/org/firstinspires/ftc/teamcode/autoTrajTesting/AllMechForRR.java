@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -33,16 +34,31 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class AllMechForRR {
-    public DcMotorEx elevatorLeft, elevatorRight, Horizontalright, Horizontalleft;
+    public DcMotorEx elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
+
+    private PIDController rightVertController;
+    private PIDController leftVertController;
+    private PIDController rightHorController;
+    private PIDController leftHorController;
+    public static double pv = 0.007, iv = 0, dv = 0.0002;
+    public static double ph = 0, ih = 0, dh = 0;
+    public static double fv = 0.05, fh = 0;
+
+    public static int vertTarget = 0;
+    public static int horTarget = 0;
+
+
+    private final double ticks_in_degrees = 576.7/180;
 
 
 
     public AllMechForRR(HardwareMap hardwareMap) {
-        Horizontalright = hardwareMap.get(DcMotorEx.class, "horizontal 1");
-        Horizontalleft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
+        horizontalRight = hardwareMap.get(DcMotorEx.class, "horizontal 1");
+        horizontalLeft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
 
-        Horizontalleft.setDirection(DcMotorSimple.Direction.REVERSE);
+        horizontalRight.setDirection(DcMotorEx.Direction.REVERSE);
+        elevatorLeft.setDirection(DcMotorEx.Direction.REVERSE);
 
         leftClaw = hardwareMap.get(Servo.class, "left claw servo");
         rightClaw = hardwareMap.get(Servo.class, "right claw servo");
@@ -56,7 +72,6 @@ public class AllMechForRR {
 
         elevatorLeft = hardwareMap.get(DcMotorEx.class, "vertical 2");
         elevatorRight = hardwareMap.get(DcMotorEx.class, "vertical 1");
-        elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         elevatorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         elevatorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -67,71 +82,52 @@ public class AllMechForRR {
     }
 
     public class ElevatorUp implements Action {
-        private boolean initialized = false;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            System.out.println("Action Running");
-            if (!initialized) {
-                elevatorLeft.setPower(0.4);
-                elevatorRight.setPower(0.4);
-                elevatorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                elevatorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                initialized = true;
-            }
-
-            double posLeft = elevatorLeft.getCurrentPosition();
-            double posRight = elevatorRight.getCurrentPosition();
-            packet.put("leftPos", posLeft);
-            packet.put("rightPos", posRight);
-
-            if (posLeft < 3100.0 && posRight < 3100.0) {
-                return true;
-            } else {
-                rightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
-                leftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
-                elevatorRight.setPower(0);
-                elevatorLeft.setPower(0);
-                return false;
-            }
-
+            vertTarget = 3500;
+            return true;
         }
     }
     public Action elevatorUp() {
         return new ElevatorUp();
     }
 
-    public class ElevatorDown implements Action {
-        private boolean initialized = false;
-
-
-
+    public class UpdatePID implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+            rightVertController.setPID(pv,iv,dv);
+            leftVertController.setPID(pv,iv,dv);
+            rightHorController.setPID(ph,ih,dh);
+            leftHorController.setPID(ph,ih,dh);
 
-            if (!initialized) {
-                elevatorLeft.setPower(-0.4);
-                elevatorRight.setPower(-0.4);
-                initialized = true;
-            }
+            int rightVertPos = elevatorRight.getCurrentPosition();
+            int leftVertPos = elevatorLeft.getCurrentPosition();
+            int rightHorPos = horizontalLeft.getCurrentPosition();
+            int leftHorPos = horizontalRight.getCurrentPosition();
 
-            double posLeft = elevatorLeft.getCurrentPosition();
-            double posRight = elevatorRight.getCurrentPosition();
-            packet.put("leftPos", posLeft);
-            packet.put("rightPos", posRight);
+            double rightVertPid = rightVertController.calculate(rightVertPos,vertTarget);
+            double leftVertPid = leftVertController.calculate(leftVertPos,vertTarget);
+            double rightHorPid = rightHorController.calculate(rightHorPos, horTarget);
+            double leftHorPid = leftHorController.calculate(leftHorPos, horTarget);
 
-            if (posLeft > 10.0 && posRight > 10.0) {
-                return true;
-            } else {
-                elevatorLeft.setPower(0);
-                elevatorRight.setPower(0);
-                return false;
-            }
+            double vertff = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
+            double horff = Math.cos(Math.toRadians(horTarget / ticks_in_degrees)) * fh;
 
+            double rightVertPower = rightVertPid + vertff;
+            double leftVertPower = leftVertPid + vertff;
+            double rightHorPower = rightHorPid + horff;
+            double leftHorPower = leftHorPid + horff;
+
+            elevatorRight.setPower(rightVertPower);
+            elevatorLeft.setPower(leftVertPower);
+            horizontalRight.setPower(rightHorPower);
+            horizontalLeft.setPower(leftHorPower);
+
+            return true;
         }
     }
-    public Action elevatorDown() {
-        return new ElevatorDown();
+    public Action updatePID() {
+        return new UpdatePID();
     }
 
     public class IntakeClawAction implements Action {

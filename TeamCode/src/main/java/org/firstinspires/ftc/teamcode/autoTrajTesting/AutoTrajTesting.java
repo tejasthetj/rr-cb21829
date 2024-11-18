@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -62,24 +63,29 @@ public class AutoTrajTesting extends LinearOpMode {
 
         waitForStart();
         Actions.runBlocking(
-                new SequentialAction(
-                        robot.resetClassAction(),
-                        firstSample.build(),
-                        robot.intakeClawAction(),
-                        robot.outtakeClawAction(),
-                        myTraj1.build(),
-                        robot.resetClassAction(),
-                        myTraj2.build(),
-                        robot.intakeClawAction(),
-                        robot.outtakeClawAction(),
-                        myTraj4.build(),
-                        robot.resetClassAction(),
-                        myTraj3.build(),
-                        robot.intakeClawAction(),
-                        robot.outtakeClawAction(),
-                        myTraj5.build(),
-                        robot.resetClassAction()
+                new ParallelAction(
+                        new SequentialAction(
+                                robot.resetClassAction(),
+                                firstSample.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                myTraj1.build(),
+                                robot.elevatorUp(),
+                                robot.resetClassAction(),
+                                myTraj2.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                myTraj4.build(),
+                                robot.resetClassAction(),
+                                myTraj3.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                myTraj5.build(),
+                                robot.resetClassAction()
+                        ),
+                        robot.updatePID()
                 )
+
         );
 
     }
