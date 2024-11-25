@@ -21,6 +21,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
+import java.util.Random;
+
 @Config
 @Autonomous(name = "red traj testing", group = "Autonomous")
 public class AutoTrajTesting extends LinearOpMode {
@@ -38,6 +40,7 @@ public class AutoTrajTesting extends LinearOpMode {
         Pose2d initialPoseSample3 = new Pose2d(-55, -55, Math.toRadians(225));
         MecanumDrive drive = new MecanumDrive(hardwareMap, redCloseStartingPose);
         AllMechForRR robot = new AllMechForRR(hardwareMap);
+
 
         TrajectoryActionBuilder firstSample = drive.actionBuilder(redCloseStartingPose)
                 .waitSeconds(1)
@@ -62,15 +65,17 @@ public class AutoTrajTesting extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45));
 
         waitForStart();
+
         Actions.runBlocking(
                 new ParallelAction(
+                        robot.updatePID(),
                         new SequentialAction(
                                 robot.resetClassAction(),
                                 firstSample.build(),
                                 robot.intakeClawAction(),
                                 robot.outtakeClawAction(),
                                 myTraj1.build(),
-                                robot.elevatorUp(),
+                                robot.elevatorUp(3500),
                                 robot.resetClassAction(),
                                 myTraj2.build(),
                                 robot.intakeClawAction(),
@@ -82,10 +87,9 @@ public class AutoTrajTesting extends LinearOpMode {
                                 robot.outtakeClawAction(),
                                 myTraj5.build(),
                                 robot.resetClassAction()
-                        ),
-                        robot.updatePID()
-                )
+                        )
 
+                )
         );
 
     }

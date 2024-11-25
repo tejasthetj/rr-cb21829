@@ -90,6 +90,8 @@ public class PIDFLoopTesting extends OpMode {
             elevatorLeft.setPower(leftVertPower);
             horizontalRight.setPower(rightHorPower);
             horizontalLeft.setPower(leftHorPower);
+            System.out.println( "New Right Vert" +rightVertPower);
+            System.out.println("New Right Vert"  +leftVertPower);
 
             telemetry.addData("Right vertical pos", rightVertPos);
             telemetry.addData("Left vertical pos", leftVertPos);

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -33,19 +34,21 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import javax.xml.transform.Source;
+
 public class AllMechForRR {
-    public DcMotorEx elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
+    public static DcMotorEx elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
 
-    private PIDController rightVertController;
-    private PIDController leftVertController;
-    private PIDController rightHorController;
-    private PIDController leftHorController;
+    PIDController rightVertController;
+    PIDController leftVertController;
+    PIDController rightHorController;
+    PIDController leftHorController;
     public static double pv = 0.007, iv = 0, dv = 0.0002;
     public static double ph = 0, ih = 0, dh = 0;
     public static double fv = 0.05, fh = 0;
 
-    public static int vertTarget = 0;
+    public volatile int vertTarget = 0;
     public static int horTarget = 0;
 
 
@@ -57,8 +60,7 @@ public class AllMechForRR {
         horizontalRight = hardwareMap.get(DcMotorEx.class, "horizontal 1");
         horizontalLeft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
 
-        horizontalRight.setDirection(DcMotorEx.Direction.REVERSE);
-        elevatorLeft.setDirection(DcMotorEx.Direction.REVERSE);
+        horizontalRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftClaw = hardwareMap.get(Servo.class, "left claw servo");
         rightClaw = hardwareMap.get(Servo.class, "right claw servo");
@@ -79,22 +81,25 @@ public class AllMechForRR {
         elevatorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         elevatorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rightVertController = new PIDController(pv,iv,dv);
+        leftVertController = new PIDController(pv, iv, dv);
+        rightHorController = new PIDController(ph,ih,dh);
+        leftHorController = new PIDController(ph,ih,dh);
+
+
     }
 
-    public class ElevatorUp implements Action {
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            vertTarget = 3500;
-            return true;
-        }
+    public Action elevatorUp(int target) {
+        return new InstantAction(() -> vertTarget = target);
     }
-    public Action elevatorUp() {
-        return new ElevatorUp();
-    }
+
 
     public class UpdatePID implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
+            System.out.println("vert target position" + vertTarget);
             rightVertController.setPID(pv,iv,dv);
             leftVertController.setPID(pv,iv,dv);
             rightHorController.setPID(ph,ih,dh);
@@ -110,18 +115,25 @@ public class AllMechForRR {
             double rightHorPid = rightHorController.calculate(rightHorPos, horTarget);
             double leftHorPid = leftHorController.calculate(leftHorPos, horTarget);
 
-            double vertff = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
-            double horff = Math.cos(Math.toRadians(horTarget / ticks_in_degrees)) * fh;
+            double vertFF = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
+            double hotFF = Math.cos(Math.toRadians(horTarget / ticks_in_degrees)) * fh;
 
-            double rightVertPower = rightVertPid + vertff;
-            double leftVertPower = leftVertPid + vertff;
-            double rightHorPower = rightHorPid + horff;
-            double leftHorPower = leftHorPid + horff;
+            double rightVertPower = rightVertPid + vertFF;
+            double leftVertPower = leftVertPid + vertFF;
+            double rightHorPower = rightHorPid + hotFF;
+            double leftHorPower = leftHorPid + hotFF;
 
             elevatorRight.setPower(rightVertPower);
             elevatorLeft.setPower(leftVertPower);
             horizontalRight.setPower(rightHorPower);
             horizontalLeft.setPower(leftHorPower);
+            System.out.println(elevatorRight);
+            System.out.println(elevatorLeft);
+            System.out.println("elevator right power: " + rightVertPower);
+            System.out.println("elevator left power: " + leftVertPower);
+            System.out.println("Elevator target: " + vertTarget);
+            System.out.println("Current Right Elevator Position: " + elevatorRight.getCurrentPosition());
+            System.out.println("Current Left Elevator Position: " + elevatorLeft.getCurrentPosition());
 
             return true;
         }
