@@ -66,31 +66,47 @@ public class AutoTrajTesting extends LinearOpMode {
 
         waitForStart();
 
+        
+        // Test runblocking for testing PID control loop.
         Actions.runBlocking(
                 new ParallelAction(
-                        robot.updatePID(),
-                        new SequentialAction(
-                                robot.resetClassAction(),
-                                firstSample.build(),
-                                robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                myTraj1.build(),
-                                robot.elevatorUp(3500),
-                                robot.resetClassAction(),
-                                myTraj2.build(),
-                                robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                myTraj4.build(),
-                                robot.resetClassAction(),
-                                myTraj3.build(),
-                                robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                myTraj5.build(),
-                                robot.resetClassAction()
-                        )
-
+                    robot.updatePID(),
+                    new SequentialAction(
+                        robot.elevatorUp(500),
+                        .waitSeconds(2),
+                        robot.elevatorUp(3000),
+                        .waitSeconds(2),
+                        robot.elevatorUp(20)
+                    )
                 )
+            
         );
+
+        // Actions.runBlocking(
+        //         new ParallelAction(
+        //                 robot.updatePID(),
+        //                 new SequentialAction(
+        //                         robot.resetClassAction(),
+        //                         firstSample.build(),
+        //                         robot.intakeClawAction(),
+        //                         robot.outtakeClawAction(),
+        //                         myTraj1.build(),
+        //                         robot.elevatorUp(3500),
+        //                         robot.resetClassAction(),
+        //                         myTraj2.build(),
+        //                         robot.intakeClawAction(),
+        //                         robot.outtakeClawAction(),
+        //                         myTraj4.build(),
+        //                         robot.resetClassAction(),
+        //                         myTraj3.build(),
+        //                         robot.intakeClawAction(),
+        //                         robot.outtakeClawAction(),
+        //                         myTraj5.build(),
+        //                         robot.resetClassAction()
+        //                 )
+
+        //         )
+        // );
 
     }
 }
