@@ -72,11 +72,11 @@ public class AutoTrajTesting extends LinearOpMode {
                 new ParallelAction(
                     robot.updatePID(),
                     new SequentialAction(
-                        robot.elevatorUp(500),
+                        robot.setElevatorTarget(500),
                         .waitSeconds(2),
-                        robot.elevatorUp(3000),
+                        robot.setElevatorTarget(3000),
                         .waitSeconds(2),
-                        robot.elevatorUp(20)
+                        robot.setElevatorTarget(20)
                     )
                 )
             
@@ -91,7 +91,7 @@ public class AutoTrajTesting extends LinearOpMode {
         //                         robot.intakeClawAction(),
         //                         robot.outtakeClawAction(),
         //                         myTraj1.build(),
-        //                         robot.elevatorUp(3500),
+        //                         robot.setElevatorTarget(3500),
         //                         robot.resetClassAction(),
         //                         myTraj2.build(),
         //                         robot.intakeClawAction(),
