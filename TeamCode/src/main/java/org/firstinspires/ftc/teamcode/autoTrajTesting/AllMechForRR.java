@@ -91,7 +91,7 @@ public class AllMechForRR {
 
     }
 
-    public Action elevatorUp(int target) {
+    public Action setElevatorTarget(int target) {
         return new InstantAction(() -> vertTarget = target);
     }
 
