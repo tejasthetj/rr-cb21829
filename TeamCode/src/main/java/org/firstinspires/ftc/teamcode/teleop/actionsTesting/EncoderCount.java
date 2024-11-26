@@ -41,6 +41,9 @@ public class EncoderCount extends LinearOpMode {
         while(opModeIsActive()) {
             telemetry.addData("Left Horizontal Encoder Count", horizontalLeft.getCurrentPosition());
             telemetry.addData("Right Horizontal Encoder Count", horizontalRight.getCurrentPosition());
+            telemetry.addData("Left Elevator Encoder Count", elevatorLeft.getCurrentPosition());
+            telemetry.addData("Right Elevator Encoder Count", elevatorRight.getCurrentPosition());
+
 
             telemetry.update();
         }
