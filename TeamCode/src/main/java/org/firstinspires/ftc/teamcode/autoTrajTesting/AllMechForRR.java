@@ -131,9 +131,8 @@ public class AllMechForRR {
             System.out.println(elevatorLeft);
             System.out.println("elevator right power: " + rightVertPower);
             System.out.println("elevator left power: " + leftVertPower);
-            System.out.println("Elevator target: " + vertTarget);
-            System.out.println("Current Right Elevator Position: " + elevatorRight.getCurrentPosition());
-            System.out.println("Current Left Elevator Position: " + elevatorLeft.getCurrentPosition());
+            System.out.println("Current Elevator right mdoe: " + elevatorRight.getMode());
+            System.out.println("Curent Elevator left mode: " + elevatorLeft.getMode());
 
             return true;
         }
