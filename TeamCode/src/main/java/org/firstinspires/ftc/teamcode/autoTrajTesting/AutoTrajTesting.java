@@ -49,21 +49,21 @@ public class AutoTrajTesting extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-48, -40 , Math.PI/2), Math.PI/2);
         TrajectoryActionBuilder myTraj1 = drive.actionBuilder(initialPoseBasketOuttake)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
         TrajectoryActionBuilder myTraj2 = drive.actionBuilder(initialPoseSample2)
                 .waitSeconds(1)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-60, -41, Math.toRadians(90)), Math.toRadians(540));
         TrajectoryActionBuilder myTraj3 = drive.actionBuilder(initialPoseSample3)
                 .waitSeconds(2)
-                .setReversed(true)
-                .splineToSplineHeading(new Pose2d(-55, -25, Math.toRadians(180)), Math.toRadians(180));
+                .setReversed(false)
+                .splineToSplineHeading(new Pose2d(-52, -40, Math.toRadians(135)), Math.toRadians(90));
         TrajectoryActionBuilder myTraj4 = drive.actionBuilder(initialPoseBasketOuttake1)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
         TrajectoryActionBuilder myTraj5 = drive.actionBuilder(initialPoseBasketOuttake2)
                 .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
 
         waitForStart();
 
@@ -91,21 +91,21 @@ public class AutoTrajTesting extends LinearOpMode {
                                  firstSample.build(),
                                  robot.intakeClawAction(),
                                  robot.outtakeClawAction(),
-                                 robot.setElevatorTarget(3300),
+                                 robot.setElevatorTarget(3500),
                                  myTraj1.build(),
                                  robot.resetClassAction(),
                                  robot.setElevatorTarget(20),
                                  myTraj2.build(),
                                  robot.intakeClawAction(),
                                  robot.outtakeClawAction(),
-                                 robot.setElevatorTarget(3300),
+                                 robot.setElevatorTarget(3500),
                                  myTraj4.build(),
                                  robot.resetClassAction(),
                                  robot.setElevatorTarget(20),
                                  myTraj3.build(),
                                  robot.intakeClawAction(),
                                  robot.outtakeClawAction(),
-                                 robot.setElevatorTarget(3300),
+                                 robot.setElevatorTarget(3500),
                                  myTraj5.build(),
                                  robot.resetClassAction()
                          )

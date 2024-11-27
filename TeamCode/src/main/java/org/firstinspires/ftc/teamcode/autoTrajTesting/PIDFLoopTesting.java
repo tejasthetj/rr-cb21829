@@ -21,8 +21,8 @@ public class PIDFLoopTesting extends OpMode {
         private PIDController rightHorController;
         private PIDController leftHorController;
         public static double pv = 0.007, iv = 0, dv = 0.0002;
-        public static double ph = 0, ih = 0, dh = 0;
-        public static double fv = 0.05, fh = 0;
+        public static double ph = 0.006, ih = 0, dh = 0.002;
+        public static double fv = 0.05, fh = 0.001;
 
         public static int vertTarget = 0;
         public static int horTarget = 0;
@@ -48,8 +48,10 @@ public class PIDFLoopTesting extends OpMode {
             horizontalLeft = hardwareMap.get(DcMotor.class, "horizontal 2");
 //            elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //            elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            horizontalRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//            horizontalLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            horizontalRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            horizontalLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            horizontalLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            horizontalRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -90,14 +92,13 @@ public class PIDFLoopTesting extends OpMode {
             elevatorLeft.setPower(leftVertPower);
             horizontalRight.setPower(rightHorPower);
             horizontalLeft.setPower(leftHorPower);
-            System.out.println( "New Right Vert" +rightVertPower);
-            System.out.println("New Right Vert"  +leftVertPower);
-
-            telemetry.addData("Right vertical pos", rightVertPos);
-            telemetry.addData("Left vertical pos", leftVertPos);
+//            telemetry.addData("Right vertical pos", rightVertPos);
+//            telemetry.addData("Left vertical pos", leftVertPos);
             telemetry.addData("Right horizontal pos", rightHorPos);
             telemetry.addData("Left horizontal pos", leftHorPos);
-            telemetry.addData("Vetical Target", vertTarget);
+            telemetry.addData("Left horizontal power", leftVertPower);
+            telemetry.addData("Right horizontal power", rightVertPower);
+//            telemetry.addData("Vetical Target", vertTarget);
             telemetry.addData("Horizontal Target", horTarget);
             telemetry.update();
 
