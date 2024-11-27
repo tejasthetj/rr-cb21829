@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -68,45 +69,49 @@ public class AutoTrajTesting extends LinearOpMode {
 
         
         // Test runblocking for testing PID control loop.
-        Actions.runBlocking(
-                new ParallelAction(
-                    robot.updatePID(),
-                    new SequentialAction(
-                        robot.setElevatorTarget(500),
-                        .waitSeconds(2),
-                        robot.setElevatorTarget(3000),
-                        .waitSeconds(2),
-                        robot.setElevatorTarget(20)
-                    )
-                )
-            
-        );
+//        Actions.runBlocking(
+//                new ParallelAction(
+//                    robot.updatePID(),
+//                    new SequentialAction(
+//                        robot.setElevatorTarget(500),
+//                        new SleepAction(2),
+//                        robot.setElevatorTarget(3000),
+//                        new SleepAction(2),
+//                        robot.setElevatorTarget(20)
+//                    )
+//                )
+//
+//        );
 
-        // Actions.runBlocking(
-        //         new ParallelAction(
-        //                 robot.updatePID(),
-        //                 new SequentialAction(
-        //                         robot.resetClassAction(),
-        //                         firstSample.build(),
-        //                         robot.intakeClawAction(),
-        //                         robot.outtakeClawAction(),
-        //                         myTraj1.build(),
-        //                         robot.setElevatorTarget(3500),
-        //                         robot.resetClassAction(),
-        //                         myTraj2.build(),
-        //                         robot.intakeClawAction(),
-        //                         robot.outtakeClawAction(),
-        //                         myTraj4.build(),
-        //                         robot.resetClassAction(),
-        //                         myTraj3.build(),
-        //                         robot.intakeClawAction(),
-        //                         robot.outtakeClawAction(),
-        //                         myTraj5.build(),
-        //                         robot.resetClassAction()
-        //                 )
+         Actions.runBlocking(
+                 new ParallelAction(
+                         robot.updatePID(),
+                         new SequentialAction(
+                                 robot.resetClassAction(),
+                                 firstSample.build(),
+                                 robot.intakeClawAction(),
+                                 robot.outtakeClawAction(),
+                                 robot.setElevatorTarget(3300),
+                                 myTraj1.build(),
+                                 robot.resetClassAction(),
+                                 robot.setElevatorTarget(20),
+                                 myTraj2.build(),
+                                 robot.intakeClawAction(),
+                                 robot.outtakeClawAction(),
+                                 robot.setElevatorTarget(3300),
+                                 myTraj4.build(),
+                                 robot.resetClassAction(),
+                                 robot.setElevatorTarget(20),
+                                 myTraj3.build(),
+                                 robot.intakeClawAction(),
+                                 robot.outtakeClawAction(),
+                                 robot.setElevatorTarget(3300),
+                                 myTraj5.build(),
+                                 robot.resetClassAction()
+                         )
 
-        //         )
-        // );
+                 )
+         );
 
     }
 }
