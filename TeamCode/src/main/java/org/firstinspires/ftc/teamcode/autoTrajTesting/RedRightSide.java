@@ -1,17 +1,113 @@
 package org.firstinspires.ftc.teamcode.autoTrajTesting;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.opencv.core.Mat;
 
 public class RedRightSide extends LinearOpMode {
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initStarting = new Pose2d()
+        Pose2d initStartPos = new Pose2d(10, -63, Math.toRadians(270));
 
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d())
+
+
+        MecanumDrive drive = new MecanumDrive(hardwareMap, initStartPos);
+        AllMechForRR robot = new AllMechForRR(hardwareMap);
+
+
+        TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
+                        .strafeTo(new Vector2d(0, -34));
+
+        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
+                        .setReversed(false)
+                        .splineToLinearHeading(new Pose2d(48, -38, Math.toRadians(90)), Math.PI / 4);
+
+        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
+                        .strafeToLinearHeading(new Vector2d(48, -55), Math.toRadians(90));
+
+        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(48, -55, Math.PI/2))
+                        .strafeToConstantHeading(new Vector2d(58, -38));
+
+        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -38, Math.PI/2))
+                        .strafeToConstantHeading(new Vector2d(58, -55));
+
+        TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
+                .setReversed(true)
+                .splineToSplineHeading(new Pose2d(50, -30, Math.toRadians(0)), Math.PI/2)
+                .splineToLinearHeading(new Pose2d(63, -10, Math.toRadians(-90)), Math.PI/6);
+
+        TrajectoryActionBuilder dropThirdSample = drive.actionBuilder(new Pose2d(63, -10, Math.toRadians(-90)))
+                .strafeToConstantHeading(new Vector2d(62, -55));
+
+        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(62, -55, Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0));
+
+        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(25, -58, Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
+
+        TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(new Pose2d(40, -58, Math.toRadians(0)))
+                .strafeToLinearHeading(new Vector2d(0, -34), Math.toRadians(-90));
+
+
+        waitForStart();
+
+        Actions.runBlocking(
+                new ParallelAction(
+                        robot.updatePID(),
+                        new SequentialAction(
+                                robot.resetClassAction(),
+                                dropPreLoaded.build(),
+                                //drop the actual specimen
+                                pickFirstSample.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                dropFirstSample.build(),
+                                robot.resetClassAction(),
+                                pickSecondSample.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                dropSecondSample.build(),
+                                robot.resetClassAction(),
+                                pickThirdSample.build(),
+                                dropThirdSample.build(),
+                                waitPatiently.build(),
+                                new SleepAction(2),
+                                // first specimen
+                                pickSpecimen.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                robot.setElevatorTarget(2700),
+                                dropSpecimen.build(),
+                                robot.setElevatorTarget(2500),
+                                robot.resetClassAction(),
+                                // second specimen
+                                pickSpecimen.build(),
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                robot.setElevatorTarget(2700),
+                                dropSpecimen.build(),
+                                robot.setElevatorTarget(2500),
+                                robot.resetClassAction(),
+                                // third specimen
+                                robot.intakeClawAction(),
+                                robot.outtakeClawAction(),
+                                robot.setElevatorTarget(2700),
+                                dropSpecimen.build(),
+                                robot.setElevatorTarget(2500),
+                                robot.resetClassAction()
+
+                        )
+                )
+        );
     }
 }
