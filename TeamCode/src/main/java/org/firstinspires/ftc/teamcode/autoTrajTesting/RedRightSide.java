@@ -7,11 +7,12 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.opencv.core.Mat;
 
+@Autonomous(name = "red right traj testing", group = "Autonomous")
 public class RedRightSide extends LinearOpMode {
 
 
@@ -26,17 +27,17 @@ public class RedRightSide extends LinearOpMode {
 
 
         TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
-                        .strafeTo(new Vector2d(0, -34));
+                        .strafeTo(new Vector2d(0, -30));
 
-        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
+        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -30, Math.toRadians(270)))
                         .setReversed(false)
-                        .splineToLinearHeading(new Pose2d(48, -38, Math.toRadians(90)), Math.PI / 4);
+                        .splineToLinearHeading(new Pose2d(48, -40, Math.toRadians(90)), Math.PI / 4);
 
         TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
                         .strafeToLinearHeading(new Vector2d(48, -55), Math.toRadians(90));
 
         TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(48, -55, Math.PI/2))
-                        .strafeToConstantHeading(new Vector2d(58, -38));
+                        .strafeToConstantHeading(new Vector2d(58, -40));
 
         TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -38, Math.PI/2))
                         .strafeToConstantHeading(new Vector2d(58, -55));
@@ -50,7 +51,8 @@ public class RedRightSide extends LinearOpMode {
                 .strafeToConstantHeading(new Vector2d(62, -55));
 
         TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(62, -55, Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0));
+                .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0))
+                .waitSeconds(2);
 
         TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(25, -58, Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
@@ -65,46 +67,52 @@ public class RedRightSide extends LinearOpMode {
                 new ParallelAction(
                         robot.updatePID(),
                         new SequentialAction(
-                                robot.resetClassAction(),
+                                robot.specimenOuttakeClawAction(),
+                                robot.setElevatorTarget(1500),
                                 dropPreLoaded.build(),
+                                robot.setElevatorTarget(1000),
+                                robot.resetClassAction(),
+                                robot.setElevatorTarget(20),
                                 //drop the actual specimen
                                 pickFirstSample.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
+                                robot.specimenOuttakeClawAction(),
                                 dropFirstSample.build(),
                                 robot.resetClassAction(),
                                 pickSecondSample.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
+                                robot.specimenOuttakeClawAction(),
                                 dropSecondSample.build(),
                                 robot.resetClassAction(),
                                 pickThirdSample.build(),
                                 dropThirdSample.build(),
                                 waitPatiently.build(),
-                                new SleepAction(2),
                                 // first specimen
                                 pickSpecimen.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                robot.setElevatorTarget(2700),
+                                robot.specimenOuttakeClawAction(),
+                                robot.setElevatorTarget(1500),
                                 dropSpecimen.build(),
-                                robot.setElevatorTarget(2500),
+                                robot.setElevatorTarget(1000),
                                 robot.resetClassAction(),
+                                robot.setElevatorTarget(20),
                                 // second specimen
                                 pickSpecimen.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                robot.setElevatorTarget(2700),
+                                robot.specimenOuttakeClawAction(),
+                                robot.setElevatorTarget(1500),
                                 dropSpecimen.build(),
-                                robot.setElevatorTarget(2500),
+                                robot.setElevatorTarget(1000),
                                 robot.resetClassAction(),
+                                robot.setElevatorTarget(20),
                                 // third specimen
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                robot.setElevatorTarget(2700),
+                                robot.specimenOuttakeClawAction(),
+                                robot.setElevatorTarget(1500),
                                 dropSpecimen.build(),
-                                robot.setElevatorTarget(2500),
-                                robot.resetClassAction()
+                                robot.setElevatorTarget(1000),
+                                robot.resetClassAction(),
+                                robot.setElevatorTarget(20)
 
                         )
                 )

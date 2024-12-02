@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_SPECIMEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
@@ -214,6 +215,46 @@ public class AllMechForRR {
     }
     public Action outtakeClawAction() {
         return new OuttakeClawAction();
+    }
+
+    public class SpecimenOuttakeClawAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
+            outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            rightClaw.setPosition(RIGHT_CLAW_OPEN);
+            leftClaw.setPosition(LEFT_CLAW_OPEN);
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            wrist.setPosition(WRIST_READJUST);
+            axle.setPosition(PIVOT_READJUST);
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            outWrist.setPosition(OUT_WRIST_SPECIMEN);
+            outAxle.setPosition(OUT_PIVOT_UP);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            return false;
+        }
+    }
+    public Action specimenOuttakeClawAction() {
+        return new SpecimenOuttakeClawAction();
     }
 
     public class ResetClassAction implements Action {

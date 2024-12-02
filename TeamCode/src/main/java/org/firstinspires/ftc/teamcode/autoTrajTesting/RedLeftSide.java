@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autoTrajTesting;
 
-// RR-specific imports
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -9,7 +8,6 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
-// Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
@@ -18,11 +16,9 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 @Autonomous(name = "red left traj", group = "Autonomous")
 public class RedLeftSide extends LinearOpMode {
 
-
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
         Pose2d redCloseStartingPose = new Pose2d(-30, -63, Math.toRadians(90));
         Pose2d initialPoseBasketOuttake = new Pose2d(-48, -40, Math.PI/2);
         Pose2d initialPoseBasketOuttake1 = new Pose2d(-58, -37, Math.toRadians(90));
@@ -56,22 +52,6 @@ public class RedLeftSide extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-57, -57), Math.toRadians(45));
 
         waitForStart();
-
-        
-        // Test runblocking for testing PID control loop.
-//        Actions.runBlocking(
-//                new ParallelAction(
-//                    robot.updatePID(),
-//                    new SequentialAction(
-//                        robot.setElevatorTarget(500),
-//                        new SleepAction(2),
-//                        robot.setElevatorTarget(3000),
-//                        new SleepAction(2),
-//                        robot.setElevatorTarget(20)
-//                    )
-//                )
-//
-//        );
 
          Actions.runBlocking(
                  new ParallelAction(
