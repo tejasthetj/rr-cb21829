@@ -98,6 +98,12 @@ public class AllMechForRR {
         return new InstantAction(() -> horTarget = target);
     }
 
+    public void resetElevators() {
+        elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevatorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     public class UpdatePID implements Action {
         @Override
@@ -232,13 +238,6 @@ public class AllMechForRR {
             leftClaw.setPosition(LEFT_CLAW_OPEN);
             try {
                 sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            wrist.setPosition(WRIST_READJUST);
-            axle.setPosition(PIVOT_READJUST);
-            try {
-                sleep(500);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

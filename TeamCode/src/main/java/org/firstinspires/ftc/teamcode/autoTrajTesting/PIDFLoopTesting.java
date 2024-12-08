@@ -101,14 +101,5 @@ public class PIDFLoopTesting extends OpMode {
             telemetry.addData("Horizontal Target", horTarget);
             telemetry.update();
 
-
-
-
-
-
-
-
-
-
         }
 }

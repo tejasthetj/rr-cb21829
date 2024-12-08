@@ -27,16 +27,16 @@ public class RedRightSide extends LinearOpMode {
 
 
         TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
-                        .strafeTo(new Vector2d(0, -30));
+                        .strafeTo(new Vector2d(0, -35));
 
         TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -30, Math.toRadians(270)))
                         .setReversed(false)
                         .splineToLinearHeading(new Pose2d(48, -40, Math.toRadians(90)), Math.PI / 4);
 
         TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
-                        .strafeToLinearHeading(new Vector2d(48, -55), Math.toRadians(90));
+                        .strafeToLinearHeading(new Vector2d(58, -55), Math.toRadians(90));
 
-        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(48, -55, Math.PI/2))
+        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
                         .strafeToConstantHeading(new Vector2d(58, -40));
 
         TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -38, Math.PI/2))
@@ -62,57 +62,61 @@ public class RedRightSide extends LinearOpMode {
 
 
         waitForStart();
+        robot.resetElevators();
 
         Actions.runBlocking(
                 new ParallelAction(
                         robot.updatePID(),
                         new SequentialAction(
-                                robot.specimenOuttakeClawAction(),
-                                robot.setElevatorTarget(1500),
-                                dropPreLoaded.build(),
-                                robot.setElevatorTarget(1000),
+                                new ParallelAction(
+                                        robot.specimenOuttakeClawAction(),
+                                        robot.setElevatorTarget(1100),
+                                        dropPreLoaded.build()
+                                ),
+                                robot.setElevatorTarget(500),
+                                new SleepAction(1),
                                 robot.resetClassAction(),
                                 robot.setElevatorTarget(20),
                                 //drop the actual specimen
                                 pickFirstSample.build(),
                                 robot.intakeClawAction(),
-                                robot.specimenOuttakeClawAction(),
+                                robot.outtakeClawAction(),
                                 dropFirstSample.build(),
                                 robot.resetClassAction(),
                                 pickSecondSample.build(),
                                 robot.intakeClawAction(),
-                                robot.specimenOuttakeClawAction(),
+                                robot.outtakeClawAction(),
                                 dropSecondSample.build(),
                                 robot.resetClassAction(),
                                 pickThirdSample.build(),
                                 dropThirdSample.build(),
-                                waitPatiently.build(),
-                                // first specimen
-                                pickSpecimen.build(),
-                                robot.intakeClawAction(),
-                                robot.specimenOuttakeClawAction(),
-                                robot.setElevatorTarget(1500),
-                                dropSpecimen.build(),
-                                robot.setElevatorTarget(1000),
-                                robot.resetClassAction(),
-                                robot.setElevatorTarget(20),
-                                // second specimen
-                                pickSpecimen.build(),
-                                robot.intakeClawAction(),
-                                robot.specimenOuttakeClawAction(),
-                                robot.setElevatorTarget(1500),
-                                dropSpecimen.build(),
-                                robot.setElevatorTarget(1000),
-                                robot.resetClassAction(),
-                                robot.setElevatorTarget(20),
-                                // third specimen
-                                robot.intakeClawAction(),
-                                robot.specimenOuttakeClawAction(),
-                                robot.setElevatorTarget(1500),
-                                dropSpecimen.build(),
-                                robot.setElevatorTarget(1000),
-                                robot.resetClassAction(),
-                                robot.setElevatorTarget(20)
+                                waitPatiently.build()
+//                                // first specimen
+//                                pickSpecimen.build(),
+//                                robot.intakeClawAction(),
+//                                robot.specimenOuttakeClawAction(),
+//                                robot.setElevatorTarget(1500),
+//                                dropSpecimen.build(),
+//                                robot.setElevatorTarget(1000),
+//                                robot.resetClassAction(),
+//                                robot.setElevatorTarget(20),
+//                                // second specimen
+//                                pickSpecimen.build(),
+//                                robot.intakeClawAction(),
+//                                robot.specimenOuttakeClawAction(),
+//                                robot.setElevatorTarget(1500),
+//                                dropSpecimen.build(),
+//                                robot.setElevatorTarget(1000),
+//                                robot.resetClassAction(),
+//                                robot.setElevatorTarget(20),
+//                                // third specimen
+//                                robot.intakeClawAction(),
+//                                robot.specimenOuttakeClawAction(),
+//                                robot.setElevatorTarget(1500),
+//                                dropSpecimen.build(),
+//                                robot.setElevatorTarget(1000),
+//                                robot.resetClassAction(),
+//                                robot.setElevatorTarget(20)
 
                         )
                 )
