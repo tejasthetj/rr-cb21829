@@ -80,13 +80,17 @@ public class RedRightSide extends LinearOpMode {
                                 //drop the actual specimen
                                 pickFirstSample.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                dropFirstSample.build(),
+                                new ParallelAction(
+                                    robot.outtakeClawAction(),
+                                    dropFirstSample.build()
+                                ),
                                 robot.resetClassAction(),
                                 pickSecondSample.build(),
                                 robot.intakeClawAction(),
-                                robot.outtakeClawAction(),
-                                dropSecondSample.build(),
+                                new ParallelAction(
+                                    robot.outtakeClawAction(),
+                                    dropSecondSample.build()
+                                ),
                                 robot.resetClassAction(),
                                 pickThirdSample.build(),
                                 dropThirdSample.build(),
