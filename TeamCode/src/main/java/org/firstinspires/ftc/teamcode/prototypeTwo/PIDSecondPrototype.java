@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp(name = "Testing second prototype PID", group = "exercise")
@@ -16,8 +17,8 @@ public class PIDSecondPrototype extends OpMode {
     public PIDController linkageController;
 
     public static double pv = 0.0, iv = 0.0, dv = 0.0;
-    public static double pl = 0.0, il = 0.0, dl = 0.0;
-    public static double fv = 0.0, fl = 0.0;
+    public static double pl = 0.006, il = 0.0, dl = 0.0009;
+    public static double fv = 0.0, fl = 0.07;
 
     public static int vertTarget;
     public static int linkTarget;
@@ -33,6 +34,7 @@ public class PIDSecondPrototype extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         linkage = hardwareMap.get(DcMotor.class, "linkage");
+        linkage.setDirection(DcMotorSimple.Direction.REVERSE);
         elevator = hardwareMap.get(DcMotor.class, "elevator");
 
         linkage.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -47,7 +49,7 @@ public class PIDSecondPrototype extends OpMode {
         linkageController.setPID(pl, il, dl);
 
         int vertPos = elevator.getCurrentPosition();
-        int linkagePos = elevator.getCurrentPosition();
+        int linkagePos = linkage.getCurrentPosition();
 
         double vertPID = vertController.calculate(vertPos, vertTarget);
         double linkagePID = linkageController.calculate(linkagePos, linkTarget);
