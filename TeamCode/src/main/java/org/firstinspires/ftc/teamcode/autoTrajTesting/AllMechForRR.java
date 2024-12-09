@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Auto;
+package org.firstinspires.ftc.teamcode.autoTrajTesting;
 
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_OPEN;
@@ -20,7 +20,6 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.RIGHT_CLAW_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_READJUST;
-import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_SPECIMEN;
 import static java.lang.Thread.sleep;
 
 import androidx.annotation.NonNull;
@@ -75,12 +74,10 @@ public class AllMechForRR {
 
         elevatorLeft = hardwareMap.get(DcMotorEx.class, "vertical 2");
         elevatorRight = hardwareMap.get(DcMotorEx.class, "vertical 1");
-        // elevatorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // elevatorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // elevatorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // elevatorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevatorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -94,6 +91,10 @@ public class AllMechForRR {
 
     public Action setElevatorTarget(int target) {
         return new InstantAction(() -> vertTarget = target);
+    }
+
+    public Action setHorizontalTarget(int target) {
+        return new InstantAction(() -> horTarget = target);
     }
 
 
@@ -213,47 +214,6 @@ public class AllMechForRR {
     }
     public Action outtakeClawAction() {
         return new OuttakeClawAction();
-    }
-
-
-    public class OuttakeClawActionSpecimen implements Action {
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
-            outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
-            try {
-                sleep(200);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            rightClaw.setPosition(RIGHT_CLAW_OPEN);
-            leftClaw.setPosition(LEFT_CLAW_OPEN);
-            try {
-                sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            wrist.setPosition(WRIST_READJUST);
-            axle.setPosition(PIVOT_READJUST);
-            try {
-                sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            outWrist.setPosition(OUT_WRIST_SPECIMEN);
-            outAxle.setPosition(OUT_PIVOT_UP);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            return false;
-        }
-    }
-    public Action outtakeClawActionSpecimen() {
-        return new OuttakeClawActionSpecimen();
     }
 
     public class ResetClassAction implements Action {

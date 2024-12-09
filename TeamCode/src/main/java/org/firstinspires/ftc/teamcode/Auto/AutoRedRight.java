@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import java.util.Random;
 
 @Config
-@Autonomous(name = "red traj testing", group = "Autonomous")
+@Autonomous(name = "red specimen auto", group = "Autonomous")
 public class AutoRedRight extends LinearOpMode {
 
 
@@ -33,8 +33,9 @@ public class AutoRedRight extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
-        Pose2d redCloseStartingPose = new Pose2d(-30, -63, Math.toRadians(90));
+        Pose2d redCloseStartingPose = new Pose2d(0, -63, Math.toRadians(90));
         Pose2d initialPosePush = new Pose2d(0,-33.5,Math.toRadians(270));
+        Pose2d initialPoseSampleScorePush = new Pose2d(55,-33,Math.toRadians(0));
         Pose2d initialPoseSampleScore = new Pose2d(0, -33.5, Math.toRadians(270));
         Pose2d initialPoseSampleGet = new Pose2d(55, -33, Math.toRadians(270));
         MecanumDrive drive = new MecanumDrive(hardwareMap, redCloseStartingPose);
@@ -43,19 +44,18 @@ public class AutoRedRight extends LinearOpMode {
 
         TrajectoryActionBuilder firstSample = drive.actionBuilder(redCloseStartingPose)
 
-                .strafeToLinearHeading(new Vector2d(0,-33.5),Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(0,-36.5),Math.toRadians(270));
                 //first specimen
 
         TrajectoryActionBuilder Push = drive.actionBuilder(initialPosePush)
-                .waitSeconds(0.5)
-                .strafeTo(new Vector2d(20,-33.5))
+                .strafeTo(new Vector2d(20,-36.5))
                 .splineToSplineHeading(new Pose2d(46,-13,Math.toRadians(270)),Math.toRadians(0))
-                .lineToY(-53)
+                .strafeToLinearHeading(new Vector2d(46,-53),Math.toRadians(270))
                 .waitSeconds(0.5)
                 .strafeTo(new Vector2d(44,-13))
                 .splineToLinearHeading(new Pose2d(55,-11.5,Math.toRadians(270)),Math.toRadians(0))
-                .lineToY(-53)
-                .lineToY(-33)
+                .strafeToLinearHeading(new Vector2d(55,-53),Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(55,-33),Math.toRadians(0))
                 .waitSeconds(1);
 
         TrajectoryActionBuilder SampleGet = drive.actionBuilder(initialPoseSampleScore)
@@ -63,9 +63,14 @@ public class AutoRedRight extends LinearOpMode {
                 //cycle1
                 .strafeToLinearHeading(new Vector2d(36,-56.5),Math.toRadians(0));
 
+        TrajectoryActionBuilder SampleGet1 = drive.actionBuilder(initialPoseSampleScorePush)
+
+                //cycle1
+                .strafeToLinearHeading(new Vector2d(36,-56.5),Math.toRadians(0));
+
 
         TrajectoryActionBuilder SampleScore = drive.actionBuilder(initialPoseSampleGet)
-                .strafeToLinearHeading(new Vector2d(0,-33.5),Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(0,-36.5),Math.toRadians(270));
 
 
 
@@ -81,9 +86,75 @@ public class AutoRedRight extends LinearOpMode {
                 new ParallelAction(
                         robot.updatePID(),
                         new SequentialAction(
-                                robot.outtakeClawAction(),
-                                robot.setElevatorTarget(300),
-                                firstSample.build()
+                                new ParallelAction(
+                                        robot.setElevatorTarget(1500),
+                                        new SequentialAction(
+                                        robot.outtakeClawAction()
+                                                ),
+                                        firstSample.build()
+
+                                ),
+
+                                robot.setElevatorTarget(1000),
+                                robot.resetClassAction(),
+                                new ParallelAction(
+                                        new SequentialAction(
+                                       robot.intakeClawAction()
+                                                ),
+
+                                        Push.build()
+
+                                ),
+                               new ParallelAction(
+                                       new SequentialAction(
+                                       robot.resetClassAction()
+                                               ),
+                                       SampleGet1.build()
+                               ),
+
+
+                                robot.intakeClawAction(),
+                                new ParallelAction(
+                                        new SequentialAction(
+                                        robot.outtakeClawAction(),
+                                        robot.setElevatorTarget(1500)
+                                                ),
+                                        SampleScore.build()
+                                ),
+                                robot.setElevatorTarget(1000),
+                                robot.resetClassAction(),
+
+                               new ParallelAction(
+                                SampleGet.build(),
+                                robot.setElevatorTarget(20)
+
+                               ),
+                                robot.intakeClawAction(),
+
+                                new ParallelAction(
+                                        new SequentialAction(
+                                                robot.outtakeClawAction(),
+                                                robot.setElevatorTarget(1500)
+                                        ),
+                                SampleScore.build()
+                                        ),
+
+                               new ParallelAction(
+                                SampleGet.build(),
+                                robot.setElevatorTarget(20)
+                               ),
+                                robot.intakeClawAction(),
+                                new ParallelAction(
+                                        new SequentialAction(
+                                                robot.outtakeClawAction(),
+                                                robot.setElevatorTarget(1500)
+                                        ),
+
+                                        SampleScore.build()
+
+                                ),
+                                SampleGet.build()
+
 
 
                         )

@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_SPECIMEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
@@ -40,21 +41,44 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-import org.firstinspires.ftc.teamcode.SampleDetectionPipelinePNP;
-
 import org.opencv.core.Scalar;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.arcrobotics.ftclib.controller.PDController;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import java.util.Objects;
 
 @TeleOp(name = "Teleop", group = "Exercises")
 public class master_copy extends LinearOpMode {
+
+    private PIDController rightVertController;
+    private PIDController leftVertController;
+    private PIDController rightHorController;
+    private PIDController leftHorController;
+
+    public static double pv = 0.007, iv = 0, dv = 0.0002;
+    public static double ph = 0.006, dh = 0.002;
+    public static double fv = 0.05;
+
+    public static int vertTarget = 0;
+    public static int horTarget = 0;
+
+
+    private final double ticks_in_degrees = 576.7/180;
+
     private OpenCvCamera camera;
     private SampleDetectionPipelinePNP pipeline;
     public DcMotor frontLeft, frontRight, rearLeft, rearRight;
-    public DcMotor Elevatorright, Elevatorleft, Horizontalright, Horizontalleft;
+    public DcMotor elevatorRight, elevatorLeft, horizontalRight, horizontalLeft;
     IMU imu;
 
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
@@ -68,6 +92,8 @@ public class master_copy extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+
         // Initialize the hardware and camera
         motorInit();
 
@@ -76,36 +102,37 @@ public class master_copy extends LinearOpMode {
 
         // Wait for the start button to be pressed
         waitForStart();
-        TrajectoryActionBuilder myTraj4 = drive.actionBuilder(initialPose)
-                .waitSeconds(1)
-                .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
+
 
         // Main loop, runs until stop is pressed
         while (opModeIsActive()) {
+
             // Check if the button is pressed to set the initial pose
-            if (gamepad1.a && !initialPoseSet) {  // 'A' button pressed
-                initialPose = drive.getPoseEstimate();  // Capture current pose
-                initialPoseSet = true;  // Mark that the initial pose is set
-                telemetry.addData("Initial Pose", initialPose.toString());
-            }
+//            if (gamepad1.a && !initialPoseSet) {  // 'A' button pressed
+//                  // Capture current pose
+//                initialPoseSet = true;  // Mark that the initial pose is set
+//                telemetry.addData("Initial Pose", initialPose.toString());
+//
+//
+//            }
+//            initialPose = drive.getPoseEstimate();
+//            TrajectoryActionBuilder myTraj4 = drive.actionBuilder(initialPose)
+//                    .waitSeconds(1)
+//                    .strafeToLinearHeading(new Vector2d(-55, -55), Math.toRadians(225));
+
+
+
 
             // Continuously track the current pose
             Pose2d currentPose = drive.getPoseEstimate();
             telemetry.addData("Current Pose", currentPose.toString());
 
             // Perform movement and servo handling
-            centricMovement(true);  // Perform movement based on field-centric control
-            servoMovements();       // Handle servo movements
 
-            // If the initial pose is set, you can perform trajectory planning from it
-            if (initialPoseSet) {
-                Actions.runBlocking(
-                        new SequentialAction(
-                                myTraj4.build()
-                        )
-                );
-                initialPoseSet = false;
-        }
+            centricMovement(true);  // Perform movement based on field-centric control
+            servoMovements();// Handle servo movements
+            Elevator_set();
+
 
             telemetry.update();  // Update telemetry
         }
@@ -130,18 +157,29 @@ public class master_copy extends LinearOpMode {
         outRightClaw = hardwareMap.get(Servo.class, "out right claw servo");
         outWrist = hardwareMap.get(Servo.class, "out wrist servo");
 
-        Elevatorright = hardwareMap.get(DcMotor.class, "vertical 1");
-        Elevatorleft = hardwareMap.get(DcMotor.class, "vertical 2");
-        Horizontalright = hardwareMap.get(DcMotor.class, "horizontal 1");
-        Horizontalleft = hardwareMap.get(DcMotor.class, "horizontal 2");
+        elevatorRight = hardwareMap.get(DcMotor.class, "vertical 1");
+        elevatorLeft = hardwareMap.get(DcMotor.class, "vertical 2");
+        horizontalRight = hardwareMap.get(DcMotor.class, "horizontal 1");
+        horizontalLeft = hardwareMap.get(DcMotor.class, "horizontal 2");
 
         // Set motor directions based on the robot configuration
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         rearLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
         rearRight.setDirection(DcMotor.Direction.FORWARD);
-        Horizontalleft.setDirection(DcMotorSimple.Direction.REVERSE);
-        Elevatorright.setDirection(DcMotorSimple.Direction.REVERSE);
+        horizontalRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+        horizontalRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        horizontalLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        horizontalLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        horizontalRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        rightVertController = new PIDController(pv,iv,dv);
+        leftVertController = new PIDController(pv, iv, dv);
+        rightHorController = new PIDController(ph,0,dh);
+        leftHorController = new PIDController(ph,0,dh);
 
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -214,10 +252,9 @@ public class master_copy extends LinearOpMode {
             rearLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             rearRight.setPower(backRightPower);
-            Elevatorright.setPower(verticalPower);
-            Elevatorleft.setPower(verticalPower);
-            Horizontalleft.setPower(horizontalPower);
-            Horizontalright.setPower(horizontalPower);
+
+            horizontalLeft.setPower(horizontalPower);
+            horizontalRight.setPower(horizontalPower);
 
         } else {
             // Robot-centric control
@@ -239,10 +276,8 @@ public class master_copy extends LinearOpMode {
             rearLeft.setPower(backLeftPower);
             frontRight.setPower(frontRightPower);
             rearRight.setPower(backRightPower);
-            Elevatorright.setPower(verticalPower);
-            Elevatorleft.setPower(verticalPower);
-            Horizontalleft.setPower(horizontalPower);
-            Horizontalright.setPower(horizontalPower);
+            horizontalLeft.setPower(horizontalPower);
+            horizontalRight.setPower(horizontalPower);
         }
     }
 
@@ -292,13 +327,11 @@ public class master_copy extends LinearOpMode {
 
             rightClaw.setPosition(RIGHT_CLAW_OPEN);
             leftClaw.setPosition(LEFT_CLAW_OPEN);
-            sleep(200);
             outLeftClaw.setPosition(OUT_LEFT_CLAW_CLOSE);
             outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE);
-            sleep(200);
+
             outWrist.setPosition(OUT_WRIST_UP);
             outAxle.setPosition(OUT_PIVOT_DOWN);
-            sleep(200);
             wrist.setPosition(WRIST_READJUST);
             axle.setPosition(PIVOT_READJUST);
 
@@ -318,8 +351,62 @@ public class master_copy extends LinearOpMode {
 
 
         }
+        else if (gamepad2.y){
+            outWrist.setPosition(OUT_WRIST_SPECIMEN);
+
+
+        }
 
     }
+
+    public void Elevator_set() {
+        rightVertController.setPID(pv, iv, dv);
+        leftVertController.setPID(pv, iv, dv);
+        rightHorController.setPID(ph, 0, dh);
+        leftHorController.setPID(ph, 0, dh);
+
+        int rightVertPos = elevatorRight.getCurrentPosition();
+        int leftVertPos = elevatorLeft.getCurrentPosition();
+        int rightHorPos = horizontalLeft.getCurrentPosition();
+        int leftHorPos = horizontalRight.getCurrentPosition();
+
+        double rightVertPid = rightVertController.calculate(rightVertPos, vertTarget);
+        double leftVertPid = leftVertController.calculate(leftVertPos, vertTarget);
+        double rightHorPid = rightHorController.calculate(rightHorPos, horTarget);
+        double leftHorPid = leftHorController.calculate(leftHorPos, horTarget);
+
+        double vertff = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
+
+        double rightVertPower = rightVertPid + vertff;
+        double leftVertPower = leftVertPid + vertff;
+
+        elevatorRight.setPower(rightVertPower);
+        elevatorLeft.setPower(leftVertPower);
+        horizontalRight.setPower(rightHorPid);
+        horizontalLeft.setPower(leftHorPid);
+
+        if (gamepad2.dpad_up) {
+
+            vertTarget = 3600;
+
+        } else if (gamepad2.dpad_down) {
+
+            vertTarget = 40;
+        }
+        else if  (gamepad2.dpad_left){
+
+            vertTarget = 1800;
+
+        }
+        else if (gamepad2.dpad_right){
+
+            vertTarget = 1100;
+        }
+    }
+
+
+
+
 
 
 }
