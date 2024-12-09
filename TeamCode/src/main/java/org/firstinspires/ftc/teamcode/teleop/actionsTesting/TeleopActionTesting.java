@@ -15,12 +15,14 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Master;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@TeleOp(name = "Teleop actions and drive testing", group = "exercise")
 public class TeleopActionTesting extends OpMode {
 
     private FtcDashboard dash = FtcDashboard.getInstance();
