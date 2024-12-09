@@ -39,7 +39,7 @@ public class RedRightSide extends LinearOpMode {
         TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
                         .strafeToConstantHeading(new Vector2d(58, -40));
 
-        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -38, Math.PI/2))
+        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -40, Math.PI/2))
                         .strafeToConstantHeading(new Vector2d(58, -55));
 
         TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
