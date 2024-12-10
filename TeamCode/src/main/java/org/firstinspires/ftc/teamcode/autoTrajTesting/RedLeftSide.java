@@ -28,8 +28,9 @@ public class RedLeftSide extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, redCloseStartingPose);
         AllMechForRR robot = new AllMechForRR(hardwareMap);
 
-
-        TrajectoryActionBuilder firstSample = drive.actionBuilder(redCloseStartingPose)
+        TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(redCloseStartingPose)
+                .strafeTo(new Vector2d(0, -35));
+        TrajectoryActionBuilder firstSample = drive.actionBuilder(new Pose2d(0, -35, Math.toRadians(90)))
                 .waitSeconds(1)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-48, -40 , Math.PI/2), Math.PI/2);
