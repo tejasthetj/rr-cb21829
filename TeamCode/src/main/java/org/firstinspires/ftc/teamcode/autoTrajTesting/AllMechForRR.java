@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autoTrajTesting;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_CLOSE;
@@ -40,6 +41,7 @@ import javax.xml.transform.Source;
 public class AllMechForRR {
     public static DcMotorEx elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
+    public static DcMotor frontLeft, frontRight, rearLeft, rearRight;
 
     PIDController rightVertController;
     PIDController leftVertController;
@@ -62,6 +64,14 @@ public class AllMechForRR {
         horizontalLeft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
 
         horizontalRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        frontLeft = hardwareMap.get(DcMotorEx.class, "left front");
+        rearLeft = hardwareMap.get(DcMotorEx.class, "left rear");
+        rearRight = hardwareMap.get(DcMotorEx.class, "right rear");
+        rearRight = hardwareMap.get(DcMotorEx.class, "right front");
+
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        rearLeft.setDirection(DcMotor.Direction.REVERSE);
 
         leftClaw = hardwareMap.get(Servo.class, "left claw servo");
         rightClaw = hardwareMap.get(Servo.class, "right claw servo");
@@ -98,11 +108,125 @@ public class AllMechForRR {
         return new InstantAction(() -> horTarget = target);
     }
 
+    public class TeleopIntakeClawAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            //change to whatever is desired
+            if (gamepad1.a) {
+                wrist.setPosition(WRIST_DOWN);
+                axle.setPosition(PIVOT_DOWN);
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                rightClaw.setPosition(RIGHT_CLAW_CLOSE);
+                leftClaw.setPosition(LEFT_CLAW_CLOSE);
+                try {
+                    sleep(700);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                wrist.setPosition(WRIST_UP);
+                axle.setPosition(PIVOT_UP);
+                rightClaw.setPosition(RIGHT_CLAW_READJUST);
+                leftClaw.setPosition(LEFT_CLAW_READJUST);
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return true;
+        }
+    }
+    public Action teleopIntakeClaw() {return new TeleopIntakeClawAction();}
+
+    public class TeleopOuttakeClawAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            // change to whatever is preferred.
+            if (gamepad1.b) {
+                outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
+                outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
+                try {
+                    sleep(200);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                rightClaw.setPosition(RIGHT_CLAW_OPEN);
+                leftClaw.setPosition(LEFT_CLAW_OPEN);
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                wrist.setPosition(WRIST_READJUST);
+                axle.setPosition(PIVOT_READJUST);
+                try {
+                    sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                outWrist.setPosition(OUT_WRIST_DOWN);
+                outAxle.setPosition(OUT_PIVOT_UP);
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            return true;
+        }
+    }
+    public Action teleopOuttakeClaw() {return  new TeleopOuttakeClawAction();}
+
+    public Action teleopElevatorSetting() {
+        // change based on preference
+        if (gamepad1.right_bumper) {
+            return new InstantAction(() -> vertTarget = 3500);
+        } else if (gamepad1.left_bumper) {
+            return new InstantAction(() -> vertTarget = 1500);
+        }
+        return new InstantAction(() -> vertTarget = 20);
+    }
+
     public void resetElevators() {
         elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         elevatorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    public static class RobotCentric implements Action {
+
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            double y = -gamepad1.left_stick_y;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
+
+            // Clipping the power to make sure it doesn't exceed the maximum value
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+            double frontLeftPower = (y + x + rx) / denominator;
+            double backLeftPower = (y - x + rx) / denominator;
+            double frontRightPower = (y - x - rx) / denominator;
+            double backRightPower = (y + x - rx) / denominator;
+
+            frontLeft.setPower(frontLeftPower);
+            rearLeft.setPower(backLeftPower);
+            frontRight.setPower(frontRightPower);
+            rearRight.setPower(backRightPower);
+
+            return true;
+        }
+    }
+    public Action robotCentric() {
+        return new RobotCentric();
     }
 
     public class UpdatePID implements Action {
