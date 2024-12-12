@@ -23,8 +23,8 @@ public class PIDFLoopTesting extends OpMode {
         private PIDController leftHorController;
 
         public static double pv = 0.007, iv = 0, dv = 0.0002;
-        public static double ph = 0.006, dh = 0.002;
-        public static double fv = 0.05;
+        public static double ph = 0, dh = 0;
+        public static double fv = 0.05, fh = 0;
 
         public static int vertTarget = 0;
         public static int horTarget = 0;
@@ -74,8 +74,8 @@ public class PIDFLoopTesting extends OpMode {
 
             int rightVertPos = elevatorRight.getCurrentPosition();
             int leftVertPos = elevatorLeft.getCurrentPosition();
-            int rightHorPos = horizontalLeft.getCurrentPosition();
-            int leftHorPos = horizontalRight.getCurrentPosition();
+            int rightHorPos = horizontalRight.getCurrentPosition();
+            int leftHorPos = horizontalLeft.getCurrentPosition();
 
             double rightVertPid = rightVertController.calculate(rightVertPos,vertTarget);
             double leftVertPid = leftVertController.calculate(leftVertPos,vertTarget);
@@ -83,14 +83,18 @@ public class PIDFLoopTesting extends OpMode {
             double leftHorPid = leftHorController.calculate(leftHorPos, horTarget);
 
             double vertff = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
+            double horff = Math.cos(Math.toRadians(horTarget / ticks_in_degrees)) * fh;
 
             double rightVertPower = rightVertPid + vertff;
             double leftVertPower = leftVertPid + vertff;
+            double rightHorPower = rightHorPid + horff;
+            double leftHorPower = leftHorPid + horff;
+
 
             elevatorRight.setPower(rightVertPower);
             elevatorLeft.setPower(leftVertPower);
-            horizontalRight.setPower(rightHorPid);
-            horizontalLeft.setPower(leftHorPid);
+            horizontalRight.setPower(rightHorPower);
+            horizontalLeft.setPower(leftHorPower);
 //            telemetry.addData("Right vertical pos", rightVertPos);
 //            telemetry.addData("Left vertical pos", leftVertPos);
             telemetry.addData("Right horizontal pos", rightHorPos);

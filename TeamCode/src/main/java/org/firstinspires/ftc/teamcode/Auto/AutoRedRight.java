@@ -33,7 +33,7 @@ public class AutoRedRight extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         //Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
-        Pose2d redCloseStartingPose = new Pose2d(0, -63, Math.toRadians(90));
+        Pose2d redCloseStartingPose = new Pose2d(10, -63, Math.toRadians(270));
         Pose2d initialPosePush = new Pose2d(0,-33.5,Math.toRadians(270));
         Pose2d initialPoseSampleScorePush = new Pose2d(55,-33,Math.toRadians(0));
         Pose2d initialPoseSampleScore = new Pose2d(0, -33.5, Math.toRadians(270));
@@ -87,15 +87,15 @@ public class AutoRedRight extends LinearOpMode {
                         robot.updatePID(),
                         new SequentialAction(
                                 new ParallelAction(
-                                        robot.setElevatorTarget(1500),
+                                        robot.setElevatorTarget(1800),
                                         new SequentialAction(
-                                        robot.outtakeClawAction()
+                                        robot.outtakeClawActionSpecimen()
                                                 ),
                                         firstSample.build()
 
                                 ),
 
-                                robot.setElevatorTarget(1000),
+                                robot.setElevatorTarget(900),
                                 robot.resetClassAction(),
                                 new ParallelAction(
                                         new SequentialAction(
@@ -116,24 +116,24 @@ public class AutoRedRight extends LinearOpMode {
                                 robot.intakeClawAction(),
                                 new ParallelAction(
                                         new SequentialAction(
-                                        robot.outtakeClawAction(),
-                                        robot.setElevatorTarget(1500)
+                                        robot.outtakeClawActionSpecimen(),
+                                        robot.setElevatorTarget(1800)
                                                 ),
                                         SampleScore.build()
                                 ),
-                                robot.setElevatorTarget(1000),
+                                robot.setElevatorTarget(900),
                                 robot.resetClassAction(),
 
                                new ParallelAction(
                                 SampleGet.build(),
-                                robot.setElevatorTarget(20)
+                                robot.setElevatorTarget(40)
 
                                ),
                                 robot.intakeClawAction(),
 
                                 new ParallelAction(
                                         new SequentialAction(
-                                                robot.outtakeClawAction(),
+                                                robot.outtakeClawActionSpecimen(),
                                                 robot.setElevatorTarget(1500)
                                         ),
                                 SampleScore.build()
@@ -141,18 +141,19 @@ public class AutoRedRight extends LinearOpMode {
 
                                new ParallelAction(
                                 SampleGet.build(),
-                                robot.setElevatorTarget(20)
+                                robot.setElevatorTarget(40)
                                ),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
                                         new SequentialAction(
-                                                robot.outtakeClawAction(),
-                                                robot.setElevatorTarget(1500)
+                                                robot.outtakeClawActionSpecimen(),
+                                                robot.setElevatorTarget(1800)
                                         ),
 
                                         SampleScore.build()
 
                                 ),
+                                robot.setElevatorTarget(900),
                                 SampleGet.build()
 
 
