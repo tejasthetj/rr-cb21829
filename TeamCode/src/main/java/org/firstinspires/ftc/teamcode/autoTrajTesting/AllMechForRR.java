@@ -48,7 +48,7 @@ public class AllMechForRR {
     PIDController rightHorController;
     PIDController leftHorController;
     public static double pv = 0.007, iv = 0, dv = 0.0002;
-    public static double ph = 0, ih = 0, dh = 0;
+    public static double ph = 0.005, ih = 0, dh = 0.0001;
     public static double fv = 0.05, fh = 0;
 
     public volatile int vertTarget = 0;
@@ -108,125 +108,11 @@ public class AllMechForRR {
         return new InstantAction(() -> horTarget = target);
     }
 
-    public class TeleopIntakeClawAction implements Action {
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            //change to whatever is desired
-            if (gamepad1.a) {
-                wrist.setPosition(WRIST_DOWN);
-                axle.setPosition(PIVOT_DOWN);
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                rightClaw.setPosition(RIGHT_CLAW_CLOSE);
-                leftClaw.setPosition(LEFT_CLAW_CLOSE);
-                try {
-                    sleep(700);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                wrist.setPosition(WRIST_UP);
-                axle.setPosition(PIVOT_UP);
-                rightClaw.setPosition(RIGHT_CLAW_READJUST);
-                leftClaw.setPosition(LEFT_CLAW_READJUST);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            return true;
-        }
-    }
-    public Action teleopIntakeClaw() {return new TeleopIntakeClawAction();}
-
-    public class TeleopOuttakeClawAction implements Action {
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            // change to whatever is preferred.
-            if (gamepad1.b) {
-                outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
-                outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
-                try {
-                    sleep(200);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                rightClaw.setPosition(RIGHT_CLAW_OPEN);
-                leftClaw.setPosition(LEFT_CLAW_OPEN);
-                try {
-                    sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                wrist.setPosition(WRIST_READJUST);
-                axle.setPosition(PIVOT_READJUST);
-                try {
-                    sleep(500);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                outWrist.setPosition(OUT_WRIST_DOWN);
-                outAxle.setPosition(OUT_PIVOT_UP);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            return true;
-        }
-    }
-    public Action teleopOuttakeClaw() {return  new TeleopOuttakeClawAction();}
-
-    public Action teleopElevatorSetting() {
-        // change based on preference
-        if (gamepad1.right_bumper) {
-            return new InstantAction(() -> vertTarget = 3500);
-        } else if (gamepad1.left_bumper) {
-            return new InstantAction(() -> vertTarget = 1500);
-        }
-        return new InstantAction(() -> vertTarget = 20);
-    }
-
     public void resetElevators() {
         elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         elevatorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         elevatorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }
-
-    public static class RobotCentric implements Action {
-
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            double y = -gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            // Clipping the power to make sure it doesn't exceed the maximum value
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-
-            frontLeft.setPower(frontLeftPower);
-            rearLeft.setPower(backLeftPower);
-            frontRight.setPower(frontRightPower);
-            rearRight.setPower(backRightPower);
-
-            return true;
-        }
-    }
-    public Action robotCentric() {
-        return new RobotCentric();
     }
 
     public class UpdatePID implements Action {
@@ -240,8 +126,8 @@ public class AllMechForRR {
 
             int rightVertPos = elevatorRight.getCurrentPosition();
             int leftVertPos = elevatorLeft.getCurrentPosition();
-            int rightHorPos = horizontalLeft.getCurrentPosition();
-            int leftHorPos = horizontalRight.getCurrentPosition();
+            int rightHorPos = horizontalRight.getCurrentPosition();
+            int leftHorPos = horizontalLeft.getCurrentPosition();
 
             double rightVertPid = rightVertController.calculate(rightVertPos,vertTarget);
             double leftVertPid = leftVertController.calculate(leftVertPos,vertTarget);
