@@ -75,12 +75,13 @@ public class AllMechForRR {
 
         elevatorLeft = hardwareMap.get(DcMotorEx.class, "vertical 2");
         elevatorRight = hardwareMap.get(DcMotorEx.class, "vertical 1");
-        // elevatorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // elevatorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        // elevatorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // elevatorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+         elevatorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+         elevatorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        elevatorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        elevatorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+         elevatorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+         elevatorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         elevatorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 

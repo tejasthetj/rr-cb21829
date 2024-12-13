@@ -34,10 +34,10 @@ public class AutoRedRight extends LinearOpMode {
 
         //Pose2d initialPose = new Pose2d(-30, -63, Math.toRadians(90));
         Pose2d redCloseStartingPose = new Pose2d(10, -63, Math.toRadians(270));
-        Pose2d initialPosePush = new Pose2d(0,-33.5,Math.toRadians(270));
+        Pose2d initialPosePush = new Pose2d(0,-36.5,Math.toRadians(270));
         Pose2d initialPoseSampleScorePush = new Pose2d(55,-33,Math.toRadians(0));
-        Pose2d initialPoseSampleScore = new Pose2d(0, -33.5, Math.toRadians(270));
-        Pose2d initialPoseSampleGet = new Pose2d(55, -33, Math.toRadians(270));
+        Pose2d initialPoseSampleScore = new Pose2d(0, -36.5, Math.toRadians(270));
+        Pose2d initialPoseSampleGet = new Pose2d(36, -56.5, Math.toRadians(0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, redCloseStartingPose);
         AllMechForRR robot = new AllMechForRR(hardwareMap);
 
@@ -48,15 +48,14 @@ public class AutoRedRight extends LinearOpMode {
                 //first specimen
 
         TrajectoryActionBuilder Push = drive.actionBuilder(initialPosePush)
-                .strafeTo(new Vector2d(20,-36.5))
+                .strafeTo(new Vector2d(20,-40))
                 .splineToSplineHeading(new Pose2d(46,-13,Math.toRadians(270)),Math.toRadians(0))
                 .strafeToLinearHeading(new Vector2d(46,-53),Math.toRadians(270))
-                .waitSeconds(0.5)
-                .strafeTo(new Vector2d(44,-13))
-                .splineToLinearHeading(new Pose2d(55,-11.5,Math.toRadians(270)),Math.toRadians(0))
-                .strafeToLinearHeading(new Vector2d(55,-53),Math.toRadians(270))
-                .strafeToLinearHeading(new Vector2d(55,-33),Math.toRadians(0))
-                .waitSeconds(1);
+//                .strafeTo(new Vector2d(44,-13))
+//                .splineToLinearHeading(new Pose2d(55,-11.5,Math.toRadians(270)),Math.toRadians(0))
+//                .strafeToLinearHeading(new Vector2d(55,-53),Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(55,-33),Math.toRadians(0));
+
 
         TrajectoryActionBuilder SampleGet = drive.actionBuilder(initialPoseSampleScore)
 
@@ -70,7 +69,8 @@ public class AutoRedRight extends LinearOpMode {
 
 
         TrajectoryActionBuilder SampleScore = drive.actionBuilder(initialPoseSampleGet)
-                .strafeToLinearHeading(new Vector2d(0,-36.5),Math.toRadians(270));
+                .strafeTo(new Vector2d(0,-60))
+                .splineToLinearHeading(new Pose2d(0,-36.5,Math.toRadians(270)),Math.toRadians(270));
 
 
 
@@ -87,7 +87,7 @@ public class AutoRedRight extends LinearOpMode {
                         robot.updatePID(),
                         new SequentialAction(
                                 new ParallelAction(
-                                        robot.setElevatorTarget(1800),
+                                        robot.setElevatorTarget(1500),
                                         new SequentialAction(
                                         robot.outtakeClawActionSpecimen()
                                                 ),
@@ -95,12 +95,15 @@ public class AutoRedRight extends LinearOpMode {
 
                                 ),
 
-                                robot.setElevatorTarget(900),
+                                robot.setElevatorTarget(40),
+                                new SleepAction(0.5),
                                 robot.resetClassAction(),
                                 new ParallelAction(
                                         new SequentialAction(
-                                       robot.intakeClawAction()
+                                       robot.intakeClawAction(),
+                                                robot.setElevatorTarget(50)
                                                 ),
+
 
                                         Push.build()
 
@@ -117,11 +120,12 @@ public class AutoRedRight extends LinearOpMode {
                                 new ParallelAction(
                                         new SequentialAction(
                                         robot.outtakeClawActionSpecimen(),
-                                        robot.setElevatorTarget(1800)
+                                        robot.setElevatorTarget(1500)
                                                 ),
                                         SampleScore.build()
                                 ),
-                                robot.setElevatorTarget(900),
+                                robot.setElevatorTarget(50),
+                                new SleepAction(0.5),
                                 robot.resetClassAction(),
 
                                new ParallelAction(
@@ -147,13 +151,15 @@ public class AutoRedRight extends LinearOpMode {
                                 new ParallelAction(
                                         new SequentialAction(
                                                 robot.outtakeClawActionSpecimen(),
-                                                robot.setElevatorTarget(1800)
+                                                robot.setElevatorTarget(1500)
                                         ),
 
                                         SampleScore.build()
 
                                 ),
-                                robot.setElevatorTarget(900),
+                                robot.setElevatorTarget(50),
+                                new SleepAction(0.5),
+                                robot.setElevatorTarget(50),
                                 SampleGet.build()
 
 

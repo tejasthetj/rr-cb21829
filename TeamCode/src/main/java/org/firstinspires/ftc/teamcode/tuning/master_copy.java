@@ -367,8 +367,8 @@ public class master_copy extends LinearOpMode {
 
         int rightVertPos = elevatorRight.getCurrentPosition();
         int leftVertPos = elevatorLeft.getCurrentPosition();
-        int rightHorPos = horizontalLeft.getCurrentPosition();
-        int leftHorPos = horizontalRight.getCurrentPosition();
+        int rightHorPos = horizontalRight.getCurrentPosition();
+        int leftHorPos = horizontalLeft.getCurrentPosition();
 
         double rightVertPid = rightVertController.calculate(rightVertPos, vertTarget);
         double leftVertPid = leftVertController.calculate(leftVertPos, vertTarget);
