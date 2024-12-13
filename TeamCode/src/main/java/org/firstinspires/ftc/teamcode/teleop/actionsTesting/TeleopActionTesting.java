@@ -4,8 +4,12 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gam
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_READJUST;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_UP;
@@ -39,22 +43,18 @@ public class TeleopActionTesting extends OpMode {
     AllMechForRR robot = new AllMechForRR(hardwareMap);
 
     SequentialAction intakeClawAction = new SequentialAction(
-            new SleepAction(1.0),
             new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
             new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN)),
-            new SleepAction(0.5),
             new ParallelAction(
                     new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_CLOSE)),
                     new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_CLOSE))
             ),
-            new SleepAction(1.0),
             new InstantAction(() -> robot.wrist.setPosition(WRIST_UP)),
             new InstantAction(() -> robot.axle.setPosition(PIVOT_UP)),
             new ParallelAction(
                     new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_READJUST)),
                     new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_READJUST))
             )
-
     );
 
     SequentialAction outtakeClawAction = new SequentialAction(
@@ -70,6 +70,25 @@ public class TeleopActionTesting extends OpMode {
             new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
             new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
             new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN))
+    );
+
+    SequentialAction resetClawAction = new SequentialAction(
+            new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST)),
+            new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
+            new ParallelAction(
+                    new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN)),
+                    new InstantAction(() -> robot.rightClaw.setPosition(LEFT_CLAW_OPEN))
+            ),
+            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_UP)),
+            new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_UP)),
+            new ParallelAction(
+                    new InstantAction(() -> robot.rightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE)),
+                    new InstantAction(() -> robot.leftClaw.setPosition(OUT_LEFT_CLAW_CLOSE))
+            ),
+            new ParallelAction(
+                    new InstantAction(() -> robot.setHorizontalTarget(20)),
+                    robot.updatePID()
+            )
     );
 
 
@@ -99,6 +118,27 @@ public class TeleopActionTesting extends OpMode {
         AllMechForRR.rearLeft.setPower(backRightPower);
 
         // add whatever gamepads you need.(claw actions)
+
+        //intake
+        if (gamepad2.a) {
+            runningActions.add(
+                    intakeClawAction
+            );
+        }
+
+        //reset
+        if (gamepad2.b) {
+            runningActions.add(
+                    resetClawAction
+            );
+        }
+
+        //outtake
+        if (gamepad2.x) {
+            runningActions.add(
+              outtakeClawAction
+            );
+        }
 
         // basket drop
         if (gamepad2.dpad_up) {
@@ -130,7 +170,7 @@ public class TeleopActionTesting extends OpMode {
             );
         }
 
-        // specimen down
+        // specimen left
         if (gamepad2.dpad_left) {
             runningActions.add(
                     new ParallelAction(
