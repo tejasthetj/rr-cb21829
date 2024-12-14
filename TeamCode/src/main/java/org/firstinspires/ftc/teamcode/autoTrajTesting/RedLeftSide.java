@@ -37,7 +37,7 @@ public class RedLeftSide extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-48, -44 , Math.PI/2), Math.PI/2);
         TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(-48, -44, Math.PI/2))
                 .strafeToLinearHeading(new Vector2d(-53, -59), Math.toRadians(45));
-        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(-55, -58, Math.toRadians(45)))
+        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(-53, -59, Math.toRadians(45)))
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-60, -44, Math.toRadians(90)), Math.toRadians(540));
         TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(-53, -59, Math.toRadians(45)))
