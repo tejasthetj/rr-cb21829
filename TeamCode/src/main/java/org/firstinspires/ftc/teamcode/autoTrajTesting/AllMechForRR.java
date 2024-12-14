@@ -167,14 +167,14 @@ public class AllMechForRR {
             wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
             try {
-                sleep(500);
+                sleep(200);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             rightClaw.setPosition(RIGHT_CLAW_CLOSE);
             leftClaw.setPosition(LEFT_CLAW_CLOSE);
             try {
-                sleep(700);
+                sleep(250);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -183,7 +183,7 @@ public class AllMechForRR {
             rightClaw.setPosition(RIGHT_CLAW_READJUST);
             leftClaw.setPosition(LEFT_CLAW_READJUST);
             try {
-                sleep(1000);
+                sleep(900);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

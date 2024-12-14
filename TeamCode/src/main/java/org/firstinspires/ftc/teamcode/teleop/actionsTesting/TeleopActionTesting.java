@@ -6,9 +6,11 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.LEFT_CLAW_READJUST;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_OPEN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
@@ -79,10 +81,12 @@ public class TeleopActionTesting extends OpMode {
                     new SequentialAction(
                             new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
                             new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN)),
+                            new SleepAction(0.25),
                             new ParallelAction(
                                     new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_CLOSE)),
                                     new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_CLOSE))
                             ),
+                            new SleepAction(0.25),
                             new InstantAction(() -> robot.wrist.setPosition(WRIST_UP)),
                             new InstantAction(() -> robot.axle.setPosition(PIVOT_UP)),
                             new ParallelAction(
@@ -103,7 +107,7 @@ public class TeleopActionTesting extends OpMode {
                                     new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN)),
                                     new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_OPEN))
                             ),
-                            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_UP)),
+                            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_DOWN)),
                             new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_UP)),
                             new ParallelAction(
                                     new InstantAction(() -> robot.rightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE)),
@@ -127,8 +131,8 @@ public class TeleopActionTesting extends OpMode {
                             ),
                             new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST)),
                             new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
-                            new InstantAction(() -> robot.wrist.setPosition(WRIST_DOWN)),
-                            new InstantAction(() -> robot.axle.setPosition(PIVOT_DOWN))
+                            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_UP)),
+                            new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_DOWN))
                     )
             );
         }
