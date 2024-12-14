@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import javax.xml.transform.Source;
 
 public class AllMechForRR {
-    public static DcMotorEx elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
+    public static DcMotor elevatorLeft, elevatorRight, horizontalRight, horizontalLeft;
     public Servo leftClaw, rightClaw, wrist, axle, outAxle, outWrist, outRightClaw, outLeftClaw;
     public static DcMotor frontLeft, frontRight, rearLeft, rearRight;
 
@@ -60,6 +60,7 @@ public class AllMechForRR {
 
 
     public AllMechForRR(HardwareMap hardwareMap) {
+
         horizontalRight = hardwareMap.get(DcMotorEx.class, "horizontal 1");
         horizontalLeft = hardwareMap.get(DcMotorEx.class, "horizontal 2");
 
@@ -68,7 +69,7 @@ public class AllMechForRR {
         frontLeft = hardwareMap.get(DcMotorEx.class, "left front");
         rearLeft = hardwareMap.get(DcMotorEx.class, "left rear");
         rearRight = hardwareMap.get(DcMotorEx.class, "right rear");
-        rearRight = hardwareMap.get(DcMotorEx.class, "right front");
+        frontRight = hardwareMap.get(DcMotorEx.class, "right front");
 
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         rearLeft.setDirection(DcMotor.Direction.REVERSE);

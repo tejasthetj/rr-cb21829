@@ -65,9 +65,9 @@ public class RedRightSide extends LinearOpMode {
 
         TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
                 .setReversed(false)
-                .splineToLinearHeading(new Pose2d(48, -38, Math.toRadians(90)), Math.PI / 4);
+                .splineToLinearHeading(new Pose2d(48, -40, Math.toRadians(90)), Math.PI / 4);
 
-        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
+        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -40, Math.toRadians(90)))
                 .strafeToLinearHeading(new Vector2d(48, -55), Math.toRadians(90));
 
         TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(48, -55, Math.PI/2))
@@ -76,10 +76,10 @@ public class RedRightSide extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(58, -10), Math.toRadians(270));
 
         TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -10, Math.toRadians(270)))
-                .strafeToConstantHeading(new Vector2d(58, -55));
+                .strafeToConstantHeading(new Vector2d(58, -58));
 
 
-        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(58, -55, Math.toRadians(270)))
+        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(48, -55, Math.toRadians(90)))
                 .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0))
                 .waitSeconds(2);
 
@@ -87,9 +87,9 @@ public class RedRightSide extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
 
         TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(new Pose2d(40, -58, Math.toRadians(0)))
-                .strafeToLinearHeading(new Vector2d(0, -34), Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(5, -36), Math.toRadians(270));
 
-        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
+        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(5, -36, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
 
 
@@ -102,24 +102,25 @@ public class RedRightSide extends LinearOpMode {
                         new SequentialAction(
                                 new ParallelAction(
                                         robot.specimenOuttakeClawAction(),
-                                        robot.setElevatorTarget(1200),
+                                        robot.setElevatorTarget(1300),
                                         dropPreLoaded.build()
                                 ),
-                                robot.setElevatorTarget(500),
+                                robot.setElevatorTarget(400),
+                                new SleepAction(0.25),
                                 new ParallelAction(
                                         pickFirstSample.build(),
-                                        robot.setElevatorTarget(20),
+                                        robot.setElevatorTarget(0),
                                         robot.resetClassAction()
                                 ),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
-                                        robot.specimenOuttakeClawAction(),
+                                        robot.outtakeClawAction(),
                                         dropFirstSample.build()
                                 ),
-                                robot.resetClassAction(),
-                                pickSecondSample.build(),
-                                dropSecondSample.build(),
-                                waitPatiently.build(),
+                                new ParallelAction(
+                                        robot.resetClassAction(),
+                                        waitPatiently.build()
+                                ),
                                 pickSpecimen1.build(),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
@@ -127,23 +128,35 @@ public class RedRightSide extends LinearOpMode {
                                         dropSpecimen.build(),
                                         robot.setElevatorTarget(1300)
                                 ),
-                                robot.setElevatorTarget(600),
-                                pickSpecimen.build(),
+                                robot.setElevatorTarget(400),
+                                new SleepAction(0.25),
+                                new ParallelAction(
+                                        robot.resetClassAction(),
+                                        robot.setElevatorTarget(10),
+                                        pickSpecimen.build()
+                                ),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
                                         robot.outtakeClawAction(),
                                         dropSpecimen.build(),
                                         robot.setElevatorTarget(1300)
                                 ),
-                                robot.setElevatorTarget(600),
-                                pickSpecimen.build(),
+                                robot.setElevatorTarget(400),
+                                new SleepAction(0.25),
+                                new ParallelAction(
+                                      robot.resetClassAction(),
+                                        robot.setElevatorTarget(10),
+                                        pickSpecimen.build()
+                                ),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
                                         robot.outtakeClawAction(),
                                         dropSpecimen.build(),
                                         robot.setElevatorTarget(1300)
                                 ),
-                                robot.setElevatorTarget(600)
+
+                                robot.setElevatorTarget(600),
+                                new SleepAction(0.25)
 
 
 
