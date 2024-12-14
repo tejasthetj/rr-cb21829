@@ -26,39 +26,71 @@ public class RedRightSide extends LinearOpMode {
         AllMechForRR robot = new AllMechForRR(hardwareMap);
 
 
-        TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
-                        .strafeTo(new Vector2d(0, -35));
+//        TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
+//                        .strafeTo(new Vector2d(0, -35));
+//
+//        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -30, Math.toRadians(270)))
+//                        .setReversed(false)
+//                        .splineToLinearHeading(new Pose2d(48, -40, Math.toRadians(90)), Math.PI / 4);
+//
+//        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
+//                        .strafeToLinearHeading(new Vector2d(58, -55), Math.toRadians(90));
+//
+//        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
+//                        .strafeToConstantHeading(new Vector2d(58, -40));
+//
+//        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -40, Math.PI/2))
+//                        .strafeToConstantHeading(new Vector2d(58, -55));
+//
+//        TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
+//                .setReversed(true)
+//                .splineToSplineHeading(new Pose2d(50, -30, Math.toRadians(0)), Math.PI/2)
+//                .splineToLinearHeading(new Pose2d(63, -10, Math.toRadians(-90)), Math.PI/6);
+//
+//        TrajectoryActionBuilder dropThirdSample = drive.actionBuilder(new Pose2d(63, -10, Math.toRadians(-90)))
+//                .strafeToConstantHeading(new Vector2d(62, -55));
+//
+//        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(62, -55, Math.toRadians(-90)))
+//                .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0))
+//                .waitSeconds(2);
+//
+//        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(25, -58, Math.toRadians(0)))
+//                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
+//
+//        TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(new Pose2d(40, -58, Math.toRadians(0)))
+//                .strafeToLinearHeading(new Vector2d(0, -34), Math.toRadians(-90));
 
-        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -30, Math.toRadians(270)))
-                        .setReversed(false)
-                        .splineToLinearHeading(new Pose2d(48, -40, Math.toRadians(90)), Math.PI / 4);
+        TrajectoryActionBuilder dropPreLoaded = drive.actionBuilder(initStartPos)
+                .strafeTo(new Vector2d(0, -34));
+
+        TrajectoryActionBuilder pickFirstSample = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(48, -38, Math.toRadians(90)), Math.PI / 4);
 
         TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(48, -38, Math.toRadians(90)))
-                        .strafeToLinearHeading(new Vector2d(58, -55), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(48, -55), Math.toRadians(90));
 
-        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
-                        .strafeToConstantHeading(new Vector2d(58, -40));
+        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(48, -55, Math.PI/2))
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(40, -10, Math.toRadians(0)), Math.PI/2)
+                .strafeToLinearHeading(new Vector2d(58, -10), Math.toRadians(270));
 
-        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -40, Math.PI/2))
-                        .strafeToConstantHeading(new Vector2d(58, -55));
+        TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(58, -10, Math.toRadians(270)))
+                .strafeToConstantHeading(new Vector2d(58, -55));
 
-        TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(58, -55, Math.PI/2))
-                .setReversed(true)
-                .splineToSplineHeading(new Pose2d(50, -30, Math.toRadians(0)), Math.PI/2)
-                .splineToLinearHeading(new Pose2d(63, -10, Math.toRadians(-90)), Math.PI/6);
 
-        TrajectoryActionBuilder dropThirdSample = drive.actionBuilder(new Pose2d(63, -10, Math.toRadians(-90)))
-                .strafeToConstantHeading(new Vector2d(62, -55));
-
-        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(62, -55, Math.toRadians(-90)))
+        TrajectoryActionBuilder waitPatiently = drive.actionBuilder(new Pose2d(58, -55, Math.toRadians(270)))
                 .strafeToLinearHeading(new Vector2d(25, -58), Math.toRadians(0))
                 .waitSeconds(2);
 
-        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(25, -58, Math.toRadians(0)))
+        TrajectoryActionBuilder pickSpecimen1 = drive.actionBuilder(new Pose2d(25, -58, Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
 
         TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(new Pose2d(40, -58, Math.toRadians(0)))
-                .strafeToLinearHeading(new Vector2d(0, -34), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(0, -34), Math.toRadians(270));
+
+        TrajectoryActionBuilder pickSpecimen = drive.actionBuilder(new Pose2d(0, -34, Math.toRadians(270)))
+                .strafeToLinearHeading(new Vector2d(40, -58), Math.toRadians(0));
 
 
         waitForStart();
@@ -70,31 +102,52 @@ public class RedRightSide extends LinearOpMode {
                         new SequentialAction(
                                 new ParallelAction(
                                         robot.specimenOuttakeClawAction(),
-                                        robot.setElevatorTarget(1100),
+                                        robot.setElevatorTarget(1200),
                                         dropPreLoaded.build()
                                 ),
                                 robot.setElevatorTarget(500),
-                                new SleepAction(1),
-                                robot.resetClassAction(),
-                                robot.setElevatorTarget(20),
-                                //drop the actual specimen
-                                pickFirstSample.build(),
+                                new ParallelAction(
+                                        pickFirstSample.build(),
+                                        robot.setElevatorTarget(20),
+                                        robot.resetClassAction()
+                                ),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
-                                    robot.outtakeClawAction(),
-                                    dropFirstSample.build()
+                                        robot.specimenOuttakeClawAction(),
+                                        dropFirstSample.build()
                                 ),
                                 robot.resetClassAction(),
                                 pickSecondSample.build(),
+                                dropSecondSample.build(),
+                                waitPatiently.build(),
+                                pickSpecimen1.build(),
                                 robot.intakeClawAction(),
                                 new ParallelAction(
-                                    robot.outtakeClawAction(),
-                                    dropSecondSample.build()
+                                        robot.outtakeClawAction(),
+                                        dropSpecimen.build(),
+                                        robot.setElevatorTarget(1300)
                                 ),
-                                robot.resetClassAction(),
-                                pickThirdSample.build(),
-                                dropThirdSample.build(),
-                                waitPatiently.build()
+                                robot.setElevatorTarget(600),
+                                pickSpecimen.build(),
+                                robot.intakeClawAction(),
+                                new ParallelAction(
+                                        robot.outtakeClawAction(),
+                                        dropSpecimen.build(),
+                                        robot.setElevatorTarget(1300)
+                                ),
+                                robot.setElevatorTarget(600),
+                                pickSpecimen.build(),
+                                robot.intakeClawAction(),
+                                new ParallelAction(
+                                        robot.outtakeClawAction(),
+                                        dropSpecimen.build(),
+                                        robot.setElevatorTarget(1300)
+                                ),
+                                robot.setElevatorTarget(600)
+
+
+
+
 //                                // first specimen
 //                                pickSpecimen.build(),
 //                                robot.intakeClawAction(),
