@@ -161,6 +161,38 @@ public class AllMechForRR {
         return new UpdatePID();
     }
 
+    public class UpdatePIDVert implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            rightVertController.setPID(pv,iv,dv);
+            leftVertController.setPID(pv,iv,dv);
+
+            int rightVertPos = elevatorRight.getCurrentPosition();
+            int leftVertPos = elevatorLeft.getCurrentPosition();
+
+
+            double rightVertPid = rightVertController.calculate(rightVertPos,vertTarget);
+            double leftVertPid = leftVertController.calculate(leftVertPos,vertTarget);
+
+            double vertFF = Math.cos(Math.toRadians(vertTarget / ticks_in_degrees)) * fv;
+
+            double rightVertPower = rightVertPid + vertFF;
+            double leftVertPower = leftVertPid + vertFF;
+
+
+            elevatorRight.setPower(rightVertPower);
+            elevatorLeft.setPower(leftVertPower);
+
+
+
+            return true;
+        }
+    }
+
+    public Action updateVertPID() {
+        return new UpdatePIDVert();
+    }
+
     public class IntakeClawAction implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -265,6 +297,39 @@ public class AllMechForRR {
     }
     public Action specimenOuttakeClawAction() {
         return new SpecimenOuttakeClawAction();
+    }
+    public class SpecimenOuttakeClawActionReset implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN);
+            outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN);
+            try {
+                sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            rightClaw.setPosition(RIGHT_CLAW_OPEN);
+            leftClaw.setPosition(LEFT_CLAW_OPEN);
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            outWrist.setPosition(OUT_WRIST_SPECIMEN);
+            outAxle.setPosition(OUT_PIVOT_UP);
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            wrist.setPosition(WRIST_READJUST);
+            axle.setPosition(PIVOT_READJUST);
+            return false;
+        }
+    }
+    public Action specimenOuttakeClawActionReset() {
+        return new SpecimenOuttakeClawActionReset();
     }
 
     public class ResetClassAction implements Action {

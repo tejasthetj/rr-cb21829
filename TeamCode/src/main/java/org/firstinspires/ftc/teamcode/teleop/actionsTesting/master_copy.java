@@ -292,7 +292,7 @@ public class master_copy extends LinearOpMode {
 
          if (gamepad2.a) {
 
-            wrist.setPosition(OUT_WRIST_DOWN_Tele);
+            wrist.setPosition(WRIST_DOWN);
             axle.setPosition(PIVOT_DOWN);
             sleep(200);
             rightClaw.setPosition(RIGHT_CLAW_CLOSE);

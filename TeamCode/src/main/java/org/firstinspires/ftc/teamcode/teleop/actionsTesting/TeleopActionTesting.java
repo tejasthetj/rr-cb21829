@@ -63,7 +63,7 @@ public class TeleopActionTesting extends OpMode {
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), .5);
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 2);
         double frontLeftPower = (y + x + rx) / denominator;
         double backLeftPower = (y - x + rx) / denominator;
         double frontRightPower = (y - x - rx) / denominator;
@@ -74,8 +74,18 @@ public class TeleopActionTesting extends OpMode {
         robot.rearLeft.setPower(backLeftPower);
         robot.frontRight.setPower(frontRightPower);
         robot.rearRight.setPower(backRightPower);
+
         robot.horizontalRight.setPower(-gamepad2.right_stick_y);
         robot.horizontalLeft.setPower(-gamepad2.right_stick_y);
+
+//        if (-gamepad2.right_stick_y > 0 || -gamepad2.right_stick_y < 0) {
+//            robot.horizontalRight.setPower(-gamepad2.right_stick_y);
+//            robot.horizontalLeft.setPower(-gamepad2.right_stick_y);
+//        } else {
+//            robot.horizontalRight.setPower(0);
+//            robot.horizontalLeft.setPower(0);
+//        }
+
 
 
 
@@ -109,8 +119,8 @@ public class TeleopActionTesting extends OpMode {
             runningActions.add(
                     new SequentialAction(
                             new ParallelAction(
-                                    new InstantAction(() -> robot.outLeftClaw.setPosition(OUT_LEFT_CLAW_CLOSE)),
-                                    new InstantAction(() -> robot.outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE))
+                                    new InstantAction(() -> robot.outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN)),
+                                    new InstantAction(() -> robot.outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN))
                             ),
                             new SleepAction(0.2),
                             new ParallelAction(
@@ -161,7 +171,7 @@ public class TeleopActionTesting extends OpMode {
         if (gamepad2.dpad_up) {
             runningActions.add(
                     new ParallelAction(
-                            robot.updatePID(),
+                            robot.updateVertPID(),
                             robot.setElevatorTarget(3400)
                     )
             );
@@ -171,7 +181,7 @@ public class TeleopActionTesting extends OpMode {
         if (gamepad2.dpad_down) {
             runningActions.add(
                     new ParallelAction(
-                            robot.updatePID(),
+                            robot.updateVertPID(),
                             robot.setElevatorTarget(20)
                     )
             );
@@ -181,7 +191,7 @@ public class TeleopActionTesting extends OpMode {
         if (gamepad2.dpad_right) {
             runningActions.add(
               new ParallelAction(
-                      robot.updatePID(),
+                      robot.updateVertPID(),
                       robot.setElevatorTarget(1500)
               )
             );
@@ -191,7 +201,7 @@ public class TeleopActionTesting extends OpMode {
         if (gamepad2.dpad_left) {
             runningActions.add(
                     new ParallelAction(
-                            robot.updatePID(),
+                            robot.updateVertPID(),
                             robot.setElevatorTarget(600)
                     )
             );

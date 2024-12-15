@@ -68,7 +68,7 @@ public class RedLeftSide extends LinearOpMode {
 
                                          dropSpecimen.build()
                                  ),
-                                 robot.setElevatorTarget(300),
+                                 robot.setElevatorTarget(20),
                                  new SleepAction(0.5),
                                  new ParallelAction(
                                          robot.resetClassAction(),
