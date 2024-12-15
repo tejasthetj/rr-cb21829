@@ -11,11 +11,15 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Config
 @Autonomous(name = "red left traj", group = "Autonomous")
 public class RedLeftSide extends LinearOpMode {
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,23 +34,26 @@ public class RedLeftSide extends LinearOpMode {
         AllMechForRR robot = new AllMechForRR(hardwareMap);
 
 
+
+
+
         TrajectoryActionBuilder dropSpecimen = drive.actionBuilder(redCloseStartingPose)
-                .strafeTo(new Vector2d(0, -37));
-        TrajectoryActionBuilder firstSample = drive.actionBuilder(new Pose2d(0, -37, Math.toRadians(270)))
+                .strafeTo(new Vector2d(0, -36));
+        TrajectoryActionBuilder firstSample = drive.actionBuilder(new Pose2d(0, -36, Math.toRadians(270)))
                 .setReversed(false)
-                .splineToLinearHeading(new Pose2d(-48, -44 , Math.PI/2), Math.PI/2);
-        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(-48, -44, Math.PI/2))
-                .strafeToLinearHeading(new Vector2d(-53, -59), Math.toRadians(45));
-        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(-53, -59, Math.toRadians(45)))
+                .splineToLinearHeading(new Pose2d(-48, -43 , Math.PI/2), Math.PI/2);
+        TrajectoryActionBuilder dropFirstSample = drive.actionBuilder(new Pose2d(-48, -43, Math.PI/2))
+                .strafeToLinearHeading(new Vector2d(-54, -61), Math.toRadians(45));
+        TrajectoryActionBuilder pickSecondSample = drive.actionBuilder(new Pose2d(-54, -61, Math.toRadians(45)))
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-60, -44, Math.toRadians(90)), Math.toRadians(540));
-        TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(-53, -59, Math.toRadians(45)))
+        TrajectoryActionBuilder pickThirdSample = drive.actionBuilder(new Pose2d(-54, -63, Math.toRadians(45)))
                 .setReversed(false)
-                .splineToSplineHeading(new Pose2d(-52, -45, Math.toRadians(135)), Math.toRadians(90));
+                .splineToSplineHeading(new Pose2d(-51, -44, Math.toRadians(140)), Math.toRadians(90));
         TrajectoryActionBuilder dropSecondSample = drive.actionBuilder(new Pose2d(-60, -44, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-53, -59), Math.toRadians(45));
-        TrajectoryActionBuilder dropThirdSample = drive.actionBuilder(new Pose2d(-52, -45, Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-53, -59), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-54, -63), Math.toRadians(45));
+        TrajectoryActionBuilder dropThirdSample = drive.actionBuilder(new Pose2d(-51, -44, Math.toRadians(140)))
+                .strafeToLinearHeading(new Vector2d(-54.5, -61.5), Math.toRadians(45));
 
         waitForStart();
 
@@ -54,17 +61,20 @@ public class RedLeftSide extends LinearOpMode {
                  new ParallelAction(
                          robot.updatePID(),
                          new SequentialAction(
+                                 robot.setHorizontalTarget(0),
                                  new ParallelAction(
                                          robot.specimenOuttakeClawAction(),
                                          robot.setElevatorTarget(1300),
+
                                          dropSpecimen.build()
                                  ),
-                                 robot.setElevatorTarget(500),
-                                 new SleepAction(0.25),
+                                 robot.setElevatorTarget(300),
+                                 new SleepAction(0.5),
                                  new ParallelAction(
                                          robot.resetClassAction(),
                                          firstSample.build(),
                                          robot.setElevatorTarget(20)
+
                                  ),
                                  robot.intakeClawAction(),
                                  robot.outtakeClawAction(),
@@ -78,7 +88,12 @@ public class RedLeftSide extends LinearOpMode {
                                  ),
                                  robot.resetClassAction(),
                                  new ParallelAction(
-                                         robot.setElevatorTarget(20),
+                                         new SequentialAction(
+                                                 new SleepAction(0.25),
+                                                 robot.setElevatorTarget(20)
+
+                                         ),
+
                                          pickSecondSample.build()
                                  ),
                                  robot.intakeClawAction(),
@@ -93,19 +108,23 @@ public class RedLeftSide extends LinearOpMode {
                                          )
                                  ),
                                  robot.resetClassAction(),
-                                 robot.setElevatorTarget(20),
+
                                  new ParallelAction(
                                          pickThirdSample.build(),
+                                         robot.setElevatorTarget(20),
                                          robot.setHorizontalTarget(1000)
                                  ),
                                  robot.intakeClawAction(),
+                                 new SleepAction(0.1),
                                  robot.setHorizontalTarget(30),
-                                 new SleepAction(0.25),
+                                 new SleepAction(0.4),
                                  robot.outtakeClawAction(),
                                  robot.setElevatorTarget(3500),
                                  new SleepAction(0.5),
                                  dropThirdSample.build(),
                                  robot.resetClassAction()
+
+
                          )
 
                  )

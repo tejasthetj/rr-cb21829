@@ -8,9 +8,11 @@ import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_CL
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_LEFT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_PIVOT_UP_Tele;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_CLOSE;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_RIGHT_CLAW_OPEN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN;
+import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_DOWN_Tele;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.OUT_WRIST_UP;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_DOWN;
 import static org.firstinspires.ftc.teamcode.Master.ServoParams.PIVOT_READJUST;
@@ -72,6 +74,11 @@ public class TeleopActionTesting extends OpMode {
         robot.rearLeft.setPower(backLeftPower);
         robot.frontRight.setPower(frontRightPower);
         robot.rearRight.setPower(backRightPower);
+        robot.horizontalRight.setPower(-gamepad2.right_stick_y);
+        robot.horizontalLeft.setPower(-gamepad2.right_stick_y);
+
+
+
 
         // add whatever gamepads you need.(claw actions)
 
@@ -98,41 +105,54 @@ public class TeleopActionTesting extends OpMode {
         }
 
         //reset
-        if (gamepad2.b) {
-            runningActions.add(
-                    new SequentialAction(
-                            new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST)),
-                            new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
-                            new ParallelAction(
-                                    new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN)),
-                                    new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_OPEN))
-                            ),
-                            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_DOWN)),
-                            new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_UP)),
-                            new ParallelAction(
-                                    new InstantAction(() -> robot.rightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE)),
-                                    new InstantAction(() -> robot.leftClaw.setPosition(OUT_LEFT_CLAW_CLOSE))
-                            )
-                    )
-            );
-        }
-
-        //outtake
         if (gamepad2.x) {
             runningActions.add(
                     new SequentialAction(
                             new ParallelAction(
-                                    new InstantAction(() -> robot.outLeftClaw.setPosition(OUT_LEFT_CLAW_OPEN)),
-                                    new InstantAction(() -> robot.outRightClaw.setPosition(OUT_RIGHT_CLAW_OPEN))
+                                    new InstantAction(() -> robot.outLeftClaw.setPosition(OUT_LEFT_CLAW_CLOSE)),
+                                    new InstantAction(() -> robot.outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE))
+                            ),
+                            new SleepAction(0.2),
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN)),
+                                    new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_OPEN))
+                            ),
+                            new SleepAction(0.1),
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
+                                    new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST))
+                            ),
+                            new SleepAction(0.5),
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_UP_Tele)),
+                                    new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_DOWN_Tele))
+                            )
+
+
+                    )
+            );
+        }
+
+        //reset
+        if (gamepad2.b) {
+            runningActions.add(
+                    new SequentialAction(
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN)),
+                                    new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_OPEN))
                             ),
                             new ParallelAction(
-                                    new InstantAction(() -> robot.rightClaw.setPosition(RIGHT_CLAW_OPEN)),
-                                    new InstantAction(() -> robot.leftClaw.setPosition(LEFT_CLAW_OPEN))
+                                    new InstantAction(() -> robot.outLeftClaw.setPosition(OUT_LEFT_CLAW_CLOSE)),
+                                    new InstantAction(() -> robot.outRightClaw.setPosition(OUT_RIGHT_CLAW_CLOSE))
                             ),
-                            new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST)),
-                            new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
-                            new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_UP)),
-                            new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_DOWN))
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.outAxle.setPosition(OUT_PIVOT_DOWN)),
+                                    new InstantAction(() -> robot.outWrist.setPosition(OUT_WRIST_UP))
+                            ),
+                            new ParallelAction(
+                                    new InstantAction(() -> robot.axle.setPosition(PIVOT_READJUST)),
+                                    new InstantAction(() -> robot.wrist.setPosition(WRIST_READJUST))
+                            )
                     )
             );
         }

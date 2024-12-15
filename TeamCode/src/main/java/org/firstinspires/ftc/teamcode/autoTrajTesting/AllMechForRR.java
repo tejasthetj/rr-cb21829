@@ -183,7 +183,7 @@ public class AllMechForRR {
             rightClaw.setPosition(RIGHT_CLAW_READJUST);
             leftClaw.setPosition(LEFT_CLAW_READJUST);
             try {
-                sleep(900);
+                sleep(1000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
